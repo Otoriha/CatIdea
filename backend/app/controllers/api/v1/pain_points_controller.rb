@@ -95,7 +95,7 @@ class Api::V1::PainPointsController < ApplicationController
 
   def quick_create
     @pain_point = current_user.pain_points.build(
-      title: params[:title],
+      title: params[:content],
       importance: 3 # デフォルト値
     )
     

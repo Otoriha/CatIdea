@@ -3,11 +3,8 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       # Pain Points routes
-      resources :pain_points, except: [:new, :edit] do
-        collection do
-          post :quick_create
-        end
-      end
+      resources :pain_points, except: [:new, :edit]
+      post 'pain_points/quick', to: 'pain_points#quick_create'
       
       # Authentication routes
       post 'auth/signup', to: 'auth#signup'
