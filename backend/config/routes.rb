@@ -12,6 +12,10 @@ Rails.application.routes.draw do
       delete 'auth/logout', to: 'auth#logout'
       get 'auth/me', to: 'auth#me'
       
+      # OAuth routes
+      get 'auth/github/callback', to: 'auth#github_callback'
+      get 'auth/failure', to: 'auth#github_failure'
+      
       get 'health', to: 'health#index'
     end
   end
@@ -20,6 +24,11 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # OAuth routes (outside of API namespace)
+  get '/auth/github', to: 'api/v1/auth#github', as: 'github_auth'
+  get '/auth/github/callback', to: 'api/v1/auth#github_callback'
+  get '/auth/failure', to: 'api/v1/auth#github_failure'
+  
   # Render dynamic PWA files from app/views/pwa/*
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
