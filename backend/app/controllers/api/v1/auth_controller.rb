@@ -55,6 +55,48 @@ class Api::V1::AuthController < ApplicationController
     }, status: :ok
   end
 
+  def github_callback
+    auth = request.env['omniauth.auth']
+    
+    # GitHubアカウント情報を取得
+    github_uid = auth.uid
+    email = auth.info.email
+    name = auth.info.name || auth.info.nickname
+    
+    # 既存ユーザーを検索またはGitHubアカウントで新規作成
+    user = User.find_by(email: email) || User.find_by(github_uid: github_uid)
+    
+    if user
+      # 既存ユーザーにGitHub UIDを追加（まだない場合）
+      user.update(github_uid: github_uid) unless user.github_uid
+    else
+      # 新規ユーザー作成
+      user = User.new(
+        email: email,
+        name: name,
+        github_uid: github_uid,
+        password: SecureRandom.hex(16) # ランダムパスワード（GitHubログインのため）
+      )
+      
+      unless user.save
+        return render json: {
+          message: 'ユーザー作成に失敗しました',
+          errors: user.errors.full_messages
+        }, status: :unprocessable_entity
+      end
+    end
+    
+    # ログイン処理
+    session[:user_id] = user.id
+    
+    # フロントエンドにリダイレクト
+    redirect_to "#{ENV['FRONTEND_URL'] || 'http://localhost:3001'}?auth=success&user_id=#{user.id}"
+  end
+
+  def github_failure
+    redirect_to "#{ENV['FRONTEND_URL'] || 'http://localhost:3001'}?auth=failure"
+  end
+
   private
 
   def user_params
