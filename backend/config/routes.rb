@@ -2,6 +2,12 @@ Rails.application.routes.draw do
   # API routes
   namespace :api do
     namespace :v1 do
+      # Authentication routes
+      post 'auth/signup', to: 'auth#signup'
+      post 'auth/login', to: 'auth#login'
+      delete 'auth/logout', to: 'auth#logout'
+      get 'auth/me', to: 'auth#me'
+      
       get 'health', to: 'health#index'
     end
   end
