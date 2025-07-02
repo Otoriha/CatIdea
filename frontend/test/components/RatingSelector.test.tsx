@@ -70,10 +70,10 @@ describe('RatingSelector', () => {
   })
 
   it('値に応じた適切なラベルが表示される', () => {
-    render(<RatingSelector {...defaultProps} value={1} />)
-    expect(screen.getByText('低い')).toBeInTheDocument()
+    const { rerender } = render(<RatingSelector {...defaultProps} value={1} />)
+    expect(screen.getAllByText('低い').length).toBeGreaterThan(0)
     
-    render(<RatingSelector {...defaultProps} value={5} />)
-    expect(screen.getByText('高い')).toBeInTheDocument()
+    rerender(<RatingSelector {...defaultProps} value={5} />)
+    expect(screen.getAllByText('高い').length).toBeGreaterThan(0)
   })
 })

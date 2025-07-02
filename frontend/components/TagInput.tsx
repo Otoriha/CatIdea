@@ -26,7 +26,8 @@ export default function TagInput({
   required = false,
   disabled = false,
   placeholder = 'タグを入力してください...',
-  maxTags = 10
+  maxTags = 10,
+  description
 }: TagInputProps) {
   const [inputValue, setInputValue] = useState('')
   const [isOpen, setIsOpen] = useState(false)
@@ -70,6 +71,8 @@ export default function TagInput({
   }, [])
 
   const addTag = (tag: string) => {
+    if (disabled) return
+    
     const trimmedTag = tag.trim()
     if (
       trimmedTag &&
@@ -121,6 +124,10 @@ export default function TagInput({
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
+      
+      {description && (
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{description}</p>
+      )}
 
       <div className="relative">
         {/* タグ表示エリア + 入力フィールド */}

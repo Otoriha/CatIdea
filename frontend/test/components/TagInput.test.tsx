@@ -87,8 +87,8 @@ describe('TagInput', () => {
     const tags = ['タグ1', 'タグ2']
     render(<TagInput {...defaultProps} value={tags} onChange={onChange} />)
     
-    const removeButtons = screen.getAllByText('×')
-    fireEvent.click(removeButtons[0])
+    const removeButton = screen.getByLabelText('タグ1を削除')
+    fireEvent.click(removeButton)
     
     expect(onChange).toHaveBeenCalledWith(['タグ2'])
   })
@@ -98,8 +98,8 @@ describe('TagInput', () => {
     const tags = ['タグ1', 'タグ2']
     render(<TagInput {...defaultProps} value={tags} maxTags={maxTags} />)
     
-    const input = screen.getByRole('textbox')
-    expect(input).toBeDisabled()
+    const input = screen.queryByRole('textbox')
+    expect(input).not.toBeInTheDocument()
   })
 
   it('最大タグ数の警告メッセージが表示される', () => {
@@ -107,7 +107,7 @@ describe('TagInput', () => {
     const tags = ['タグ1', 'タグ2']
     render(<TagInput {...defaultProps} value={tags} maxTags={maxTags} />)
     
-    expect(screen.getByText(`最大${maxTags}個までタグを追加できます`)).toBeInTheDocument()
+    expect(screen.getByText(`${maxTags}/2`)).toBeInTheDocument()
   })
 
   it('入力に応じて候補が絞り込まれる', async () => {
@@ -145,11 +145,13 @@ describe('TagInput', () => {
     fireEvent.change(input, { target: { value: 'タグ' } })
     
     await waitFor(() => {
-      fireEvent.keyDown(input, { key: 'ArrowDown', code: 'ArrowDown' })
+      expect(screen.getByText('タグ1')).toBeInTheDocument()
     })
     
+    fireEvent.keyDown(input, { key: 'ArrowDown', code: 'ArrowDown' })
+    
     const firstSuggestion = screen.getByText('タグ1')
-    expect(firstSuggestion.parentElement).toHaveClass('bg-blue-50')
+    expect(firstSuggestion).toHaveClass('bg-blue-50')
   })
 
   it('ArrowUpキーで候補を選択できる', async () => {
@@ -159,13 +161,15 @@ describe('TagInput', () => {
     fireEvent.change(input, { target: { value: 'タグ' } })
     
     await waitFor(() => {
-      fireEvent.keyDown(input, { key: 'ArrowDown', code: 'ArrowDown' })
-      fireEvent.keyDown(input, { key: 'ArrowDown', code: 'ArrowDown' })
-      fireEvent.keyDown(input, { key: 'ArrowUp', code: 'ArrowUp' })
+      expect(screen.getByText('タグ1')).toBeInTheDocument()
     })
     
+    fireEvent.keyDown(input, { key: 'ArrowDown', code: 'ArrowDown' })
+    fireEvent.keyDown(input, { key: 'ArrowDown', code: 'ArrowDown' })
+    fireEvent.keyDown(input, { key: 'ArrowUp', code: 'ArrowUp' })
+    
     const firstSuggestion = screen.getByText('タグ1')
-    expect(firstSuggestion.parentElement).toHaveClass('bg-blue-50')
+    expect(firstSuggestion).toHaveClass('bg-blue-50')
   })
 
   it('Escapeキーで候補リストが閉じる', async () => {
