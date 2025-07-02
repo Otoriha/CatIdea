@@ -29,12 +29,26 @@ export default function Home() {
             </div>
           </div>
         ) : isLoggedIn ? (
-          <section className="mb-16">
-            <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6 text-center">
-              ペインポイントをクイック登録
-            </h2>
-            <QuickRegistration />
-          </section>
+          <>
+            <section className="mb-16">
+              <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6 text-center">
+                ペインポイントをクイック登録
+              </h2>
+              <QuickRegistration />
+              
+              <div className="text-center mt-6">
+                <Link
+                  href="/pain-points/new"
+                  className="inline-flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 font-medium transition-colors"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  詳細フォームで登録
+                </Link>
+              </div>
+            </section>
+          </>
         ) : (
           <section className="mb-16 text-center">
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6">
