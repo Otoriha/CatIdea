@@ -73,7 +73,9 @@ class OpenAiService
     when 200..299
       # Success
     when 401
-      raise AuthenticationError, "Invalid API key"
+      error_msg = extract_error_message(response)
+      Rails.logger.error "OpenAI API 401 Error: #{error_msg}"
+      raise AuthenticationError, "Invalid API key: #{error_msg}"
     when 429
       raise RateLimitError, "Rate limit exceeded. Please try again later."
     when 400..499
