@@ -17,6 +17,9 @@ gem "redis", ">= 4.0.1"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.7"
 
+# JWT for token authentication
+gem "jwt"
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
@@ -58,6 +61,10 @@ end
 group :test do
   # HTTP request stubbing
   gem "webmock"
+  # Matchers for RSpec
+  gem "shoulda-matchers", "~> 5.0"
+  # Mock Redis for testing
+  gem "mock_redis"
 end
 
 

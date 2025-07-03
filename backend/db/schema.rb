@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_02_124553) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_03_113341) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -47,9 +47,38 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_02_124553) do
     t.bigint "pain_point_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "total_tokens", default: 0, null: false
+    t.decimal "total_cost", precision: 10, scale: 6, default: "0.0", null: false
+    t.integer "status", default: 0, null: false
     t.index ["pain_point_id"], name: "index_ai_conversations_on_pain_point_id"
     t.index ["pain_point_id"], name: "index_ai_conversations_on_pain_point_id_unique", unique: true
+    t.index ["status"], name: "index_ai_conversations_on_status"
     t.index ["user_id"], name: "index_ai_conversations_on_user_id"
+  end
+
+  create_table "api_usages", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "ai_model", null: false
+    t.integer "input_tokens", default: 0, null: false
+    t.integer "output_tokens", default: 0, null: false
+    t.integer "total_tokens", default: 0, null: false
+    t.decimal "cost", precision: 10, scale: 6, default: "0.0", null: false
+    t.string "request_type", null: false
+    t.jsonb "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ai_model"], name: "index_api_usages_on_ai_model"
+    t.index ["user_id", "created_at"], name: "index_api_usages_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_api_usages_on_user_id"
+  end
+
+  create_table "jwt_blacklists", force: :cascade do |t|
+    t.string "jti", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expires_at"], name: "index_jwt_blacklists_on_expires_at"
+    t.index ["jti"], name: "index_jwt_blacklists_on_jti", unique: true
   end
 
   create_table "messages", force: :cascade do |t|
@@ -58,6 +87,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_02_124553) do
     t.text "content", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "input_tokens", default: 0, null: false
+    t.integer "output_tokens", default: 0, null: false
     t.index ["ai_conversation_id", "created_at"], name: "index_messages_on_ai_conversation_id_and_created_at"
     t.index ["ai_conversation_id"], name: "index_messages_on_ai_conversation_id"
   end
@@ -104,6 +135,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_02_124553) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "ai_conversations", "pain_points"
   add_foreign_key "ai_conversations", "users"
+  add_foreign_key "api_usages", "users"
   add_foreign_key "messages", "ai_conversations"
   add_foreign_key "pain_point_tags", "pain_points"
   add_foreign_key "pain_point_tags", "tags"
