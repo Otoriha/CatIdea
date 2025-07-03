@@ -1,12 +1,12 @@
 FactoryBot.define do
   factory :api_usage do
-    user { nil }
-    ai_model { "MyString" }
-    input_tokens { 1 }
-    output_tokens { 1 }
-    total_tokens { 1 }
-    cost { "9.99" }
-    request_type { "MyString" }
-    metadata { "" }
+    user
+    ai_model { "gpt-4.1-nano" }
+    input_tokens { 100 }
+    output_tokens { 50 }
+    total_tokens { 150 }
+    cost { 0.000045 }
+    request_type { "conversation" }
+    metadata { {} }
   end
 end

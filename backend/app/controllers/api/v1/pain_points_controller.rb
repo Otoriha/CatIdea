@@ -94,6 +94,12 @@ class Api::V1::PainPointsController < ApplicationController
   end
 
   def quick_create
+    if params[:content].blank?
+      return render json: {
+        error: 'コンテンツを入力してください'
+      }, status: :unprocessable_entity
+    end
+    
     @pain_point = current_user.pain_points.build(
       title: params[:content],
       importance: 3 # デフォルト値

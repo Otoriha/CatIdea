@@ -1,5 +1,5 @@
 class Api::V1::AiConversationsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :require_login
   before_action :check_api_cost_limit, only: [ :create, :send_message ]
   before_action :check_rate_limit, only: [ :create, :send_message ]
   before_action :set_pain_point, only: [ :create ]
@@ -59,23 +59,6 @@ class Api::V1::AiConversationsController < ApplicationController
   end
 
   private
-
-  def authenticate_user!
-    return if current_user
-    render json: { error: "Unauthorized" }, status: :unauthorized
-  end
-
-  def current_user
-    @current_user ||= begin
-      token = request.headers["Authorization"]&.split(" ")&.last
-      return nil unless token
-
-      payload = JsonWebToken.decode(token)
-      User.find(payload["user_id"]) if payload
-    rescue JWT::DecodeError
-      nil
-    end
-  end
 
   def check_api_cost_limit
     unless current_user.can_use_api?

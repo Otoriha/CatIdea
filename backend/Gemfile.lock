@@ -343,6 +343,7 @@ DEPENDENCIES
   dotenv-rails
   factory_bot_rails
   httparty
+  jwt
   mock_redis
   omniauth
   omniauth-github

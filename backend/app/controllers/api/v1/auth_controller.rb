@@ -39,7 +39,8 @@ class Api::V1::AuthController < ApplicationController
       session[:user_id] = user.id
       render json: {
         message: 'ログインしました',
-        user: user_response(user)
+        user: user_response(user),
+        token: generate_jwt_token(user) # Optional: JWT token for API access
       }, status: :ok
     else
       render json: {

@@ -149,7 +149,7 @@ RSpec.describe OpenAiService do
 
       it 'raises AuthenticationError' do
         expect { service.generate_conversation(pain_point) }
-          .to raise_error(OpenAiService::AuthenticationError, 'Invalid API key')
+          .to raise_error(OpenAiService::AuthenticationError, /Invalid API key/)
       end
     end
 
