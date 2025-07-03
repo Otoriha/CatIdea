@@ -5,6 +5,21 @@ class Api::V1::PainPointsController < ApplicationController
   def index
     @pain_points = current_user.pain_points.includes(:tags)
     
+    # 検索機能
+    @pain_points = @pain_points.search(params[:q]) if params[:q].present?
+    
+    # タグフィルタ
+    if params[:tag_ids].present?
+      tag_ids = params[:tag_ids].is_a?(String) ? params[:tag_ids].split(',') : params[:tag_ids]
+      @pain_points = @pain_points.by_tags(tag_ids)
+    end
+    
+    # 重要度フィルタ
+    @pain_points = @pain_points.by_importance(params[:importance]) if params[:importance].present?
+    
+    # 緊急度フィルタ
+    @pain_points = @pain_points.by_urgency(params[:urgency]) if params[:urgency].present?
+    
     # ソート機能
     @pain_points = case params[:sort]
                    when 'created_at_asc'
@@ -15,12 +30,16 @@ class Api::V1::PainPointsController < ApplicationController
                      @pain_points.ordered_by_importance(:asc)
                    when 'importance_desc'
                      @pain_points.ordered_by_importance(:desc)
+                   when 'urgency_asc'
+                     @pain_points.order(urgency: :asc)
+                   when 'urgency_desc'
+                     @pain_points.order(urgency: :desc)
                    else
                      @pain_points.ordered_by_created_at(:desc)
                    end
 
-    # 重要度フィルタ
-    @pain_points = @pain_points.by_importance(params[:importance]) if params[:importance].present?
+    # 総件数を取得（ページネーション前）
+    total_count = @pain_points.count
 
     # ページネーション
     page = params[:page]&.to_i || 1
@@ -28,7 +47,6 @@ class Api::V1::PainPointsController < ApplicationController
     per_page = [per_page, 50].min # 最大50件まで
 
     @pain_points = @pain_points.limit(per_page).offset((page - 1) * per_page)
-    total_count = current_user.pain_points.count
 
     render json: {
       pain_points: @pain_points.map { |pain_point| pain_point_response(pain_point) },
@@ -129,7 +147,7 @@ class Api::V1::PainPointsController < ApplicationController
   end
 
   def pain_point_params
-    params.require(:pain_point).permit(:title, :description, :importance, images: [])
+    params.require(:pain_point).permit(:title, :description, :importance, :urgency, images: [])
   end
 
   def pain_point_response(pain_point)
@@ -138,6 +156,7 @@ class Api::V1::PainPointsController < ApplicationController
       title: pain_point.title,
       description: pain_point.description,
       importance: pain_point.importance,
+      urgency: pain_point.urgency,
       tags: pain_point.tags.map { |tag| { id: tag.id, name: tag.name } },
       images: pain_point.images.attached? ? pain_point.images.map { |image| rails_blob_url(image) } : [],
       created_at: pain_point.created_at,

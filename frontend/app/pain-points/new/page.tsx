@@ -36,7 +36,8 @@ export default function NewPainPointPage() {
           pain_point: {
             title: formData.title,
             description: `## 状況\n${formData.situation}\n\n## 感じた不便さ\n${formData.inconvenience}${formData.impact_scope ? `\n\n## 影響範囲\n${formData.impact_scope}` : ''}`,
-            importance: formData.importance
+            importance: formData.importance,
+            urgency: formData.urgency
           },
           tags: formData.tags
         }),
