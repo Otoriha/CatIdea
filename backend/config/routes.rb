@@ -8,6 +8,9 @@ Rails.application.routes.draw do
         resources :ai_conversations, only: [:create]
       end
       
+      # Tags routes
+      resources :tags, only: [:index]
+      
       # AI Conversations routes
       resources :ai_conversations, only: [:index, :show] do
         member do

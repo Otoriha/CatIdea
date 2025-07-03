@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
-import { useParams } from 'next/navigation'
+import { apiClient } from '@/lib/api-client'
 import Header from '@/components/Header'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import DetailedPainPointForm from '@/components/DetailedPainPointForm'
@@ -10,8 +10,9 @@ import DetailedPainPointForm from '@/components/DetailedPainPointForm'
 interface PainPoint {
   id: number
   title: string
-  description: string
+  description?: string
   importance: number
+  urgency: number
   tags: Array<{ id: number; name: string }>
   created_at: string
   updated_at: string
@@ -27,29 +28,21 @@ interface PainPointFormData {
   urgency: number
 }
 
-export default function EditPainPointPage() {
+export default function EditPainPointPage({ params }: { params: Promise<{ id: string }> }) {
   const [painPoint, setPainPoint] = useState<PainPoint | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingData, setIsLoadingData] = useState(true)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const router = useRouter()
-  const params = useParams()
-  const id = params.id as string
+  const resolvedParams = use(params)
+  const id = resolvedParams.id
 
   // ペインポイントデータの取得
   useEffect(() => {
     const fetchPainPoint = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pain_points/${id}`, {
-          credentials: 'include',
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          setPainPoint(data.pain_point)
-        } else {
-          setMessage({ type: 'error', text: 'ペインポイントの取得に失敗しました' })
-        }
+        const response = await apiClient.get(`/pain_points/${id}`)
+        setPainPoint(response.data.pain_point)
       } catch (error) {
         console.error('Error fetching pain point:', error)
         setMessage({ type: 'error', text: 'ネットワークエラーが発生しました' })
@@ -64,7 +57,11 @@ export default function EditPainPointPage() {
   }, [id])
 
   // descriptionからフィールドを分解する関数
-  const parseDescription = (description: string) => {
+  const parseDescription = (description: string | null | undefined) => {
+    if (!description) {
+      return { situation: '', inconvenience: '', impact_scope: '' }
+    }
+    
     const sections = description.split('\n\n')
     let situation = ''
     let inconvenience = ''
@@ -95,7 +92,7 @@ export default function EditPainPointPage() {
       impact_scope,
       tags: painPoint.tags.map(tag => tag.name),
       importance: painPoint.importance,
-      urgency: 3 // デフォルト値（既存データにはurgencyがないため）
+      urgency: painPoint.urgency || 3
     }
   }
 
@@ -104,40 +101,24 @@ export default function EditPainPointPage() {
     setMessage(null)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pain_points/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await apiClient.patch(`/pain_points/${id}`, {
+        pain_point: {
+          title: formData.title,
+          description: `## 状況\n${formData.situation}\n\n## 感じた不便さ\n${formData.inconvenience}${formData.impact_scope ? `\n\n## 影響範囲\n${formData.impact_scope}` : ''}`,
+          importance: formData.importance,
+          urgency: formData.urgency
         },
-        credentials: 'include',
-        body: JSON.stringify({
-          pain_point: {
-            title: formData.title,
-            description: `## 状況\n${formData.situation}\n\n## 感じた不便さ\n${formData.inconvenience}${formData.impact_scope ? `\n\n## 影響範囲\n${formData.impact_scope}` : ''}`,
-            importance: formData.importance
-          },
-          tags: formData.tags
-        }),
+        tags: formData.tags
       })
-
-      if (response.ok) {
-        const data = await response.json()
-        setMessage({ type: 'success', text: 'ペインポイントを更新しました' })
-        
-        // 成功時は詳細ページへリダイレクト
-        setTimeout(() => {
-          router.push(`/pain-points/${id}`)
-        }, 1500)
-        
-        return { success: true }
-      } else {
-        const errorData = await response.json()
-        setMessage({ 
-          type: 'error', 
-          text: errorData.message || 'ペインポイントの更新に失敗しました' 
-        })
-        return { success: false, message: errorData.message }
-      }
+      
+      setMessage({ type: 'success', text: 'ペインポイントを更新しました' })
+      
+      // 成功時は詳細ページへリダイレクト
+      setTimeout(() => {
+        router.push(`/pain-points/${id}`)
+      }, 1500)
+      
+      return { success: true }
     } catch (error) {
       console.error('Error updating pain point:', error)
       setMessage({ 
