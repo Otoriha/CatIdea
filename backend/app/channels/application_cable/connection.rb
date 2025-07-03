@@ -13,10 +13,16 @@ module ApplicationCable
       return reject_unauthorized_connection unless token
       
       payload = JsonWebToken.decode(token)
-      user = User.find(payload['user_id']) if payload
+      return reject_unauthorized_connection unless payload
       
+      # ブラックリストチェック
+      if payload['jti'] && JwtBlacklist.active.exists?(jti: payload['jti'])
+        return reject_unauthorized_connection
+      end
+      
+      user = User.find(payload['user_id'])
       user || reject_unauthorized_connection
-    rescue JWT::DecodeError
+    rescue StandardError
       reject_unauthorized_connection
     end
   end

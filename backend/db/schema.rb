@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_03_025027) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_03_113341) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -70,6 +70,15 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_03_025027) do
     t.index ["ai_model"], name: "index_api_usages_on_ai_model"
     t.index ["user_id", "created_at"], name: "index_api_usages_on_user_id_and_created_at"
     t.index ["user_id"], name: "index_api_usages_on_user_id"
+  end
+
+  create_table "jwt_blacklists", force: :cascade do |t|
+    t.string "jti", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expires_at"], name: "index_jwt_blacklists_on_expires_at"
+    t.index ["jti"], name: "index_jwt_blacklists_on_jti", unique: true
   end
 
   create_table "messages", force: :cascade do |t|

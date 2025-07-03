@@ -51,6 +51,23 @@ class Api::V1::AuthController < ApplicationController
 
   def logout
     session[:user_id] = nil
+
+    # JWTトークンが提供されている場合、ブラックリストに追加
+    if request.headers['Authorization'].present?
+      token = request.headers['Authorization'].split(' ').last
+      begin
+        payload = JsonWebToken.decode(token)
+        if payload && payload['jti'] && payload['exp']
+          JwtBlacklist.create!(
+            jti: payload['jti'],
+            expires_at: Time.at(payload['exp'])
+          )
+        end
+      rescue StandardError => e
+        Rails.logger.error "JWT blacklist error: #{e.message}"
+      end
+    end
+
     render json: {
       message: 'ログアウトしました'
     }, status: :ok

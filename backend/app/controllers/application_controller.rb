@@ -22,7 +22,15 @@ class ApplicationController < ActionController::API
     
     token = request.headers['Authorization'].split(' ').last
     payload = JsonWebToken.decode(token)
-    User.find(payload['user_id']) if payload
+    
+    return nil unless payload
+    
+    # ブラックリストチェック
+    if payload['jti'] && JwtBlacklist.active.exists?(jti: payload['jti'])
+      return nil
+    end
+    
+    User.find(payload['user_id'])
   rescue StandardError
     nil
   end
