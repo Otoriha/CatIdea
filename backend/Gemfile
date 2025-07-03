@@ -58,6 +58,10 @@ end
 group :test do
   # HTTP request stubbing
   gem "webmock"
+  # Matchers for RSpec
+  gem "shoulda-matchers", "~> 5.0"
+  # Mock Redis for testing
+  gem "mock_redis"
 end
 
 
