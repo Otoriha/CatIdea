@@ -45,7 +45,7 @@ RSpec.describe ApiUsage, type: :model do
   describe '.calculate_cost' do
     it 'calculates cost for gpt-4.1-nano model' do
       cost = ApiUsage.calculate_cost('gpt-4.1-nano', 1000, 500)
-      expect(cost).to eq(0.00045) # (1000 * 0.00000015) + (500 * 0.00000060)
+      expect(cost).to eq(0.00030) # (1000 * 0.00000010) + (500 * 0.00000040)
     end
     
     it 'uses default pricing for unknown models' do
@@ -76,7 +76,7 @@ RSpec.describe ApiUsage, type: :model do
       expect(usage.input_tokens).to eq(100)
       expect(usage.output_tokens).to eq(50)
       expect(usage.total_tokens).to eq(150)
-      expect(usage.cost).to eq(0.000045)
+      expect(usage.cost).to eq(0.000030) # (100 * 0.00000010) + (50 * 0.00000040)
       expect(usage.metadata).to eq({ 'test' => true })
     end
   end

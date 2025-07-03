@@ -19,8 +19,8 @@ class ApiUsage < ApplicationRecord
   def self.calculate_cost(model, input_tokens, output_tokens)
     case model
     when "gpt-4.1-nano"
-      # $0.15 / 1M input tokens, $0.60 / 1M output tokens
-      (input_tokens * 0.00000015) + (output_tokens * 0.00000060)
+      # $0.10 / 1M input tokens, $0.40 / 1M output tokens
+      (input_tokens * 0.00000010) + (output_tokens * 0.00000040)
     else
       # Default pricing for other models
       (input_tokens * 0.000002) + (output_tokens * 0.000002)

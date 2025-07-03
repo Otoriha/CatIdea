@@ -32,9 +32,9 @@ class AiConversation < ApplicationRecord
 
   def calculate_total_cost
     # Cost calculation based on model pricing
-    # gpt-4.1-nano: $0.15 / 1M input tokens, $0.60 / 1M output tokens
-    input_cost = messages.sum(:input_tokens) * 0.00000015
-    output_cost = messages.sum(:output_tokens) * 0.00000060
+    # gpt-4.1-nano: $0.10 / 1M input tokens, $0.40 / 1M output tokens
+    input_cost = messages.sum(:input_tokens) * 0.00000010
+    output_cost = messages.sum(:output_tokens) * 0.00000040
     input_cost + output_cost
   end
 end
