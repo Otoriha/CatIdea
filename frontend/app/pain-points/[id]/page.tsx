@@ -75,13 +75,7 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
   }
 
   const handleStartConversation = async () => {
-    try {
-      const response = await apiClient.post(`/pain_points/${id}/ai_conversations`)
-      setConversationId(response.data.id)
-      setShowChat(true)
-    } catch (error) {
-      console.error('Failed to start conversation:', error)
-    }
+    setShowChat(true)
   }
 
   const getImportanceLabel = (importance: number) => {
@@ -249,7 +243,7 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
           <div className="h-[600px]">
             <ChatContainer
               painPointId={id}
-              conversationId={conversationId || undefined}
+              conversationId={conversationId}
             />
           </div>
         </div>

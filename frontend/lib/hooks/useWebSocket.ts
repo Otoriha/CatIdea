@@ -30,6 +30,8 @@ export function useWebSocket({
   const [isConnected, setIsConnected] = useState(false);
   const consumerRef = useRef<Consumer | null>(null);
   const subscriptionRef = useRef<Subscription | null>(null);
+  const channelParamsRef = useRef(channelParams);
+  const callbacksRef = useRef({ onConnected, onDisconnected, onReceived, onError });
 
   const disconnect = useCallback(() => {
     if (subscriptionRef.current) {
@@ -43,39 +45,58 @@ export function useWebSocket({
     setIsConnected(false);
   }, []);
 
+  // コールバックを最新の値に更新
+  useEffect(() => {
+    callbacksRef.current = { onConnected, onDisconnected, onReceived, onError };
+  }, [onConnected, onDisconnected, onReceived, onError]);
+
   const connect = useCallback(() => {
     if (!token) {
-      onError?.(new Error('認証トークンがありません'));
+      callbacksRef.current.onError?.(new Error('認証トークンがありません'));
       return;
     }
 
     try {
       // WebSocket URLにトークンを含める
-      const wsUrl = `${process.env.NEXT_PUBLIC_WS_URL}?token=${encodeURIComponent(token)}`;
+      // NEXT_PUBLIC_WS_URL が設定されていない場合は、NEXT_PUBLIC_API_URL から自動生成する
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+      // API エンドポイント（例: http://localhost:3000/api/v1）を WebSocket エンドポイント（例: ws://localhost:3000/cable）へ変換
+      const apiOrigin = apiBaseUrl.replace(/\/?api(?:\/v\d+)?$/, '');
+      const fallbackWsBase = apiOrigin.replace(/^http/, 'ws') + '/cable';
+      const wsBaseUrl = process.env.NEXT_PUBLIC_WS_URL || fallbackWsBase;
+      const wsUrl = `${wsBaseUrl}?token=${encodeURIComponent(token)}`;
       
       // Action Cableコンシューマーを作成
       const consumer = createConsumer(wsUrl);
       consumerRef.current = consumer;
 
       // チャンネルにサブスクライブ
+      console.log('Creating subscription with params:', {
+        channel: channelName,
+        ...channelParamsRef.current,
+      });
+      
       const subscription = consumer.subscriptions.create(
         {
           channel: channelName,
-          ...channelParams,
+          ...channelParamsRef.current,
         },
         {
           connected() {
+            console.log('Channel connected!');
             setIsConnected(true);
-            onConnected?.();
+            callbacksRef.current.onConnected?.();
           },
 
           disconnected() {
+            console.log('Channel disconnected!');
             setIsConnected(false);
-            onDisconnected?.();
+            callbacksRef.current.onDisconnected?.();
           },
 
           received(data: any) {
-            onReceived?.(data);
+            console.log('Data received from channel:', data);
+            callbacksRef.current.onReceived?.(data);
           },
         }
       );
@@ -83,14 +104,14 @@ export function useWebSocket({
       subscriptionRef.current = subscription;
     } catch (error) {
       const err = error instanceof Error ? error : new Error('WebSocket接続エラー');
-      onError?.(err);
+      callbacksRef.current.onError?.(err);
       setIsConnected(false);
     }
-  }, [token, channelName, channelParams, onConnected, onDisconnected, onReceived, onError]);
+  }, [token, channelName]); // 依存配列を最小限に
 
   const sendMessage = useCallback((action: string, data: any) => {
     if (!subscriptionRef.current) {
-      onError?.(new Error('WebSocket接続がありません'));
+      callbacksRef.current.onError?.(new Error('WebSocket接続がありません'));
       return;
     }
 
@@ -98,9 +119,9 @@ export function useWebSocket({
       subscriptionRef.current.perform(action, data);
     } catch (error) {
       const err = error instanceof Error ? error : new Error('メッセージ送信エラー');
-      onError?.(err);
+      callbacksRef.current.onError?.(err);
     }
-  }, [onError]);
+  }, []);
 
   const reconnect = useCallback(() => {
     disconnect();
@@ -109,13 +130,44 @@ export function useWebSocket({
     }, 100);
   }, [disconnect, connect]);
 
+  // channelParamsの変更を検知して再接続
   useEffect(() => {
-    connect();
+    console.log('useWebSocket effect triggered with:', {
+      channelParams,
+      token: token ? 'exists' : 'missing',
+      channelName
+    });
+    
+    const hasValidParams = channelParams && 
+                          Object.keys(channelParams).length > 0 && 
+                          Object.values(channelParams).every(v => v !== undefined && v !== null);
+    
+    console.log('hasValidParams:', hasValidParams);
+    
+    channelParamsRef.current = channelParams;
+    
+    if (hasValidParams && token) {
+      console.log('Attempting to connect...');
+      // 既存の接続があれば切断してから再接続
+      if (subscriptionRef.current) {
+        disconnect();
+        setTimeout(() => {
+          connect();
+        }, 100);
+      } else {
+        connect();
+      }
+    } else {
+      console.log('Not connecting because:', {
+        hasValidParams,
+        hasToken: !!token
+      });
+    }
 
     return () => {
       disconnect();
     };
-  }, [connect, disconnect]);
+  }, [channelParams?.conversation_id, token]); // conversation_idが変わったら再接続
 
   return {
     isConnected,

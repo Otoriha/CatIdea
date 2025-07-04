@@ -16,7 +16,7 @@ class AiConversation < ApplicationRecord
   scope :active_conversations, -> { where(status: :active) }
 
   def add_message(sender_type, content, input_tokens: 0, output_tokens: 0)
-    messages.create!(
+    message = messages.create!(
       sender_type: sender_type,
       content: content,
       input_tokens: input_tokens,
@@ -28,6 +28,8 @@ class AiConversation < ApplicationRecord
       total_tokens: total_tokens + input_tokens + output_tokens,
       total_cost: calculate_total_cost
     )
+
+    message
   end
 
   def calculate_total_cost

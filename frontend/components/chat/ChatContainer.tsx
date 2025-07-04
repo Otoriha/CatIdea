@@ -14,7 +14,7 @@ interface ChatContainerProps {
   conversationId?: string;
 }
 
-export default function ChatContainer({ painPointId, conversationId: initialConversationId }: ChatContainerProps) {
+export default function ChatContainer({ painPointId, conversationId }: ChatContainerProps) {
   const { token } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversation, setConversation] = useState<AiConversation | null>(null);
@@ -23,6 +23,7 @@ export default function ChatContainer({ painPointId, conversationId: initialConv
   const [streamingContent, setStreamingContent] = useState<{ [key: string]: string }>({});
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const initializedRef = useRef(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -32,9 +33,17 @@ export default function ChatContainer({ painPointId, conversationId: initialConv
     scrollToBottom();
   }, [messages, streamingContent]);
 
+  const shouldConnect = !!conversation && !!token;
+  
+  console.log('ChatContainer state:', {
+    conversation,
+    token: token ? 'exists' : 'missing',
+    shouldConnect
+  });
+  
   const { isConnected, sendMessage: sendWebSocketMessage } = useWebSocket({
-    channelName: 'AiConversationChannel',
-    channelParams: { conversation_id: conversation?.id },
+    channelName: 'ConversationChannel',
+    channelParams: shouldConnect ? { conversation_id: conversation.id } : {},
     onConnected: () => {
       console.log('WebSocket connected');
       setError(null);
@@ -52,8 +61,20 @@ export default function ChatContainer({ painPointId, conversationId: initialConv
   });
 
   const handleWebSocketMessage = useCallback((data: ChatMessage) => {
+    console.log('WebSocket message received:', data);
+    
     switch (data.type) {
+      case 'connection_established':
+        console.log('Connection established for conversation:', data);
+        // conversationのstatusがerrorの場合、エラーメッセージを表示
+        if (data.status === 'error') {
+          setError('AI会話でエラーが発生しました。新しい会話を開始してください。');
+        }
+        break;
+
       case 'message':
+      case 'ai_message':
+      case 'user_message':
         if (data.message) {
           setMessages(prev => [...prev, data.message!]);
           setIsTyping(false);
@@ -92,6 +113,7 @@ export default function ChatContainer({ painPointId, conversationId: initialConv
   const createConversation = async () => {
     try {
       const response = await apiClient.post(`/pain_points/${painPointId}/ai_conversations`, {});
+      console.log('createConversation response:', response.data);
       return response.data;
     } catch (error) {
       console.error('Failed to create conversation:', error);
@@ -111,23 +133,25 @@ export default function ChatContainer({ painPointId, conversationId: initialConv
   };
 
   useEffect(() => {
+    // 既に初期化済みの場合はスキップ
+    if (initializedRef.current || !token) return;
+    
     const initializeChat = async () => {
+      console.log('Creating new conversation...');
       try {
-        if (initialConversationId) {
-          await loadConversation(initialConversationId);
-        } else {
-          const newConversation = await createConversation();
-          setConversation(newConversation);
-        }
+        const response = await apiClient.post(`/pain_points/${painPointId}/ai_conversations`, {});
+        console.log('createConversation response:', response.data);
+        setConversation(response.data);
+        initializedRef.current = true;
       } catch (error) {
+        console.error('initializeChat error:', error);
         setError('チャットの初期化に失敗しました');
       }
     };
 
-    if (token) {
-      initializeChat();
-    }
-  }, [painPointId, initialConversationId, token]);
+    console.log('Initializing chat for painPointId:', painPointId);
+    initializeChat();
+  }, []); // 空の依存配列で、コンポーネントマウント時のみ実行
 
   const handleSendMessage = async (content: string) => {
     if (!conversation || !isConnected || isSending) return;
@@ -148,7 +172,10 @@ export default function ChatContainer({ painPointId, conversationId: initialConv
       setMessages(prev => [...prev, tempUserMessage]);
 
       // WebSocket経由でメッセージを送信
-      sendWebSocketMessage('send_message', { content });
+      sendWebSocketMessage('send_message', { 
+        content,
+        conversation_id: conversation.id 
+      });
 
       // タイピングインジケーターを表示
       setIsTyping(true);
@@ -174,11 +201,6 @@ export default function ChatContainer({ painPointId, conversationId: initialConv
             }`}>
               {isConnected ? '接続中' : '切断'}
             </span>
-            {conversation.total_cost > 0 && (
-              <span className="text-xs text-gray-500">
-                使用料金: ${conversation.total_cost.toFixed(4)}
-              </span>
-            )}
           </div>
         )}
       </div>
