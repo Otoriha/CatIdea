@@ -8,6 +8,10 @@ import MessageInput from './MessageInput';
 import TypingIndicator from './TypingIndicator';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/contexts/AuthContext';
+import { painPointsApi, type PainPoint } from '@/lib/api/pain-points';
+import CreateIdeaModal from '@/components/CreateIdeaModal';
+import Link from 'next/link';
+import { Lightbulb } from 'lucide-react';
 
 interface ChatContainerProps {
   painPointId: string;
@@ -21,6 +25,9 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
   const [isSending, setIsSending] = useState(false);
   const [streamingContent, setStreamingContent] = useState<{ [key: string]: string }>({});
   const [error, setError] = useState<string | null>(null);
+  const [relatedPainPoints, setRelatedPainPoints] = useState<PainPoint[]>([]);
+  const [showCreateIdeaModal, setShowCreateIdeaModal] = useState(false);
+  const [selectedPainPoint, setSelectedPainPoint] = useState<PainPoint | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const initializedRef = useRef(false);
 
@@ -131,6 +138,20 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
     initializeChat();
   }, []); // 空の依存配列で、コンポーネントマウント時のみ実行
 
+  // 関連ペインポイントを取得
+  useEffect(() => {
+    const fetchRelatedPainPoints = async () => {
+      try {
+        const response = await painPointsApi.getRelatedPainPoints(painPointId, 5);
+        setRelatedPainPoints(response.related_pain_points);
+      } catch (error) {
+        console.error('Failed to fetch related pain points:', error);
+      }
+    };
+
+    fetchRelatedPainPoints();
+  }, [painPointId]);
+
   const handleSendMessage = async (content: string) => {
     if (!conversation || !isConnected || isSending) return;
 
@@ -167,29 +188,47 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
     }
   };
 
-  return (
-    <div className="flex flex-col h-full bg-white rounded-lg shadow-lg">
-      {/* ヘッダー */}
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900">AI アシスタント</h3>
-        {conversation && (
-          <div className="flex items-center gap-2 mt-1">
-            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-              isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-            }`}>
-              {isConnected ? '接続中' : '切断'}
-            </span>
-          </div>
-        )}
-      </div>
+  const handleCreateIdea = (painPoint: PainPoint) => {
+    setSelectedPainPoint(painPoint);
+    setShowCreateIdeaModal(true);
+  };
 
-      {/* メッセージエリア */}
-      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
-            {error}
+  return (
+    <div className="flex h-full">
+      {/* メインチャットエリア */}
+      <div className="flex-1 flex flex-col bg-white rounded-lg shadow-lg">
+        {/* ヘッダー */}
+        <div className="px-6 py-4 border-b border-gray-200">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-gray-900">AI アシスタント</h3>
+            {conversation && (
+              <button
+                onClick={() => handleCreateIdea({ id: Number(painPointId), title: '現在のペインポイント' } as PainPoint)}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Lightbulb className="w-4 h-4" />
+                アイディアに昇華
+              </button>
+            )}
           </div>
-        )}
+          {conversation && (
+            <div className="flex items-center gap-2 mt-1">
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+              }`}>
+                {isConnected ? '接続中' : '切断'}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* メッセージエリア */}
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+              {error}
+            </div>
+          )}
 
         {messages.map((message) => (
           <MessageBubble
@@ -201,23 +240,79 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
 
         {isTyping && <TypingIndicator />}
 
-        <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* 入力エリア */}
+        <div className="px-6 py-4 border-t border-gray-200">
+          <MessageInput
+            onSendMessage={handleSendMessage}
+            disabled={!isConnected || isSending || conversation?.status === 'cost_limit_reached'}
+            placeholder={
+              conversation?.status === 'cost_limit_reached'
+                ? '月額の利用上限に達しました'
+                : !isConnected
+                ? '接続中...'
+                : 'メッセージを入力...'
+            }
+          />
+        </div>
       </div>
 
-      {/* 入力エリア */}
-      <div className="px-6 py-4 border-t border-gray-200">
-        <MessageInput
-          onSendMessage={handleSendMessage}
-          disabled={!isConnected || isSending || conversation?.status === 'cost_limit_reached'}
-          placeholder={
-            conversation?.status === 'cost_limit_reached'
-              ? '月額の利用上限に達しました'
-              : !isConnected
-              ? '接続中...'
-              : 'メッセージを入力...'
-          }
+      {/* 関連ペインポイントサイドバー */}
+      {relatedPainPoints.length > 0 && (
+        <div className="w-80 bg-gray-50 border-l border-gray-200 p-4 overflow-y-auto">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">関連するペインポイント</h3>
+          <div className="space-y-3">
+            {relatedPainPoints.map((painPoint) => (
+              <div key={painPoint.id} className="bg-white rounded-lg p-3 shadow-sm">
+                <Link
+                  href={`/pain-points/${painPoint.id}`}
+                  className="block hover:bg-gray-50 -m-3 p-3 rounded-lg transition-colors"
+                >
+                  <h4 className="font-medium text-gray-900 mb-1 line-clamp-2">
+                    {painPoint.title}
+                  </h4>
+                  {painPoint.description && (
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {painPoint.description}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-xs text-gray-500">
+                      重要度: {painPoint.importance}/5
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      緊急度: {painPoint.urgency}/5
+                    </span>
+                  </div>
+                </Link>
+                <button
+                  onClick={() => handleCreateIdea(painPoint)}
+                  className="mt-2 w-full flex items-center justify-center gap-1 px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition-colors"
+                >
+                  <Lightbulb className="w-3 h-3" />
+                  アイディアに昇華
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* アイディア作成モーダル */}
+      {selectedPainPoint && (
+        <CreateIdeaModal
+          painPointId={selectedPainPoint.id}
+          painPointTitle={selectedPainPoint.title}
+          isOpen={showCreateIdeaModal}
+          onClose={() => {
+            setShowCreateIdeaModal(false);
+            setSelectedPainPoint(null);
+          }}
+          fromConversation={true}
         />
-      </div>
+      )}
     </div>
   );
 }

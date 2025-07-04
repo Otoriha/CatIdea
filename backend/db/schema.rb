@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_03_123532) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_04_061554) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -70,6 +70,25 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_03_123532) do
     t.index ["ai_model"], name: "index_api_usages_on_ai_model"
     t.index ["user_id", "created_at"], name: "index_api_usages_on_user_id_and_created_at"
     t.index ["user_id"], name: "index_api_usages_on_user_id"
+  end
+
+  create_table "ideas", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "pain_point_id", null: false
+    t.bigint "ai_conversation_id"
+    t.string "title", null: false
+    t.text "description", null: false
+    t.integer "feasibility", default: 3, null: false
+    t.integer "impact", default: 3, null: false
+    t.string "status", default: "draft", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ai_conversation_id"], name: "index_ideas_on_ai_conversation_id"
+    t.index ["pain_point_id", "created_at"], name: "index_ideas_on_pain_point_id_and_created_at"
+    t.index ["pain_point_id"], name: "index_ideas_on_pain_point_id"
+    t.index ["status"], name: "index_ideas_on_status"
+    t.index ["user_id", "created_at"], name: "index_ideas_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_ideas_on_user_id"
   end
 
   create_table "jwt_blacklists", force: :cascade do |t|
@@ -138,6 +157,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_03_123532) do
   add_foreign_key "ai_conversations", "pain_points"
   add_foreign_key "ai_conversations", "users"
   add_foreign_key "api_usages", "users"
+  add_foreign_key "ideas", "ai_conversations"
+  add_foreign_key "ideas", "pain_points"
+  add_foreign_key "ideas", "users"
   add_foreign_key "messages", "ai_conversations"
   add_foreign_key "pain_point_tags", "pain_points"
   add_foreign_key "pain_point_tags", "tags"

@@ -8,8 +8,9 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft, Edit, Trash2, MessageSquare, X } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, MessageSquare, X, Lightbulb } from 'lucide-react'
 import ChatContainer from '@/components/chat/ChatContainer'
+import CreateIdeaModal from '@/components/CreateIdeaModal'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,6 +46,7 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
   const [loading, setLoading] = useState(true)
   const [showChat, setShowChat] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
+  const [showCreateIdeaModal, setShowCreateIdeaModal] = useState(false)
   const resolvedParams = use(params)
   const id = resolvedParams.id
 
@@ -131,6 +133,13 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
           一覧に戻る
         </Button>
         <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => setShowCreateIdeaModal(true)}
+          >
+            <Lightbulb className="w-4 h-4 mr-2" />
+            アイディアに昇華
+          </Button>
           <Button
             variant="outline"
             onClick={() => router.push(`/pain-points/${id}/edit`)}
@@ -247,6 +256,15 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
             />
           </div>
         </div>
+      )}
+
+      {painPoint && (
+        <CreateIdeaModal
+          painPointId={painPoint.id}
+          painPointTitle={painPoint.title}
+          isOpen={showCreateIdeaModal}
+          onClose={() => setShowCreateIdeaModal(false)}
+        />
       )}
         </div>
       </div>

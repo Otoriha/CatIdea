@@ -9,6 +9,7 @@ class User < ApplicationRecord
   has_many :pain_points, dependent: :destroy
   has_many :ai_conversations, dependent: :destroy
   has_many :api_usages, dependent: :destroy
+  has_many :ideas, dependent: :destroy
 
   before_save { self.email = email.downcase }
 
