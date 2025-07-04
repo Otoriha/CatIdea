@@ -1,5 +1,5 @@
 class Api::V1::IdeasController < ApplicationController
-  before_action :authenticate_user!
+  before_action :require_login
   before_action :set_pain_point, only: [:create]
   before_action :set_idea, only: [:show, :update, :destroy]
 
@@ -14,20 +14,32 @@ class Api::V1::IdeasController < ApplicationController
     
     # ソート
     case params[:sort]
-    when 'priority'
-      @ideas = @ideas.sort_by(&:priority_score).reverse
     when 'impact'
       @ideas = @ideas.order(impact: :desc)
     when 'feasibility'
       @ideas = @ideas.order(feasibility: :desc)
     end
 
-    # ページネーション
-    @ideas = @ideas.page(params[:page]).per(params[:per_page] || 20)
+    # ページネーション（簡易実装）
+    page = (params[:page] || 1).to_i
+    per_page = (params[:per_page] || 20).to_i
+    
+    total_count = @ideas.count
+    ideas_array = @ideas.offset((page - 1) * per_page).limit(per_page).to_a
+    
+    # priorityソートの場合は取得後にソート
+    if params[:sort] == 'priority'
+      ideas_array = ideas_array.sort_by(&:priority_score).reverse
+    end
 
     render json: {
-      ideas: @ideas.map { |idea| idea_json(idea) },
-      meta: pagination_meta(@ideas)
+      ideas: ideas_array.map { |idea| idea_json(idea) },
+      meta: {
+        current_page: page,
+        total_pages: (total_count.to_f / per_page).ceil,
+        total_count: total_count,
+        per_page: per_page
+      }
     }
   end
 
@@ -111,12 +123,4 @@ class Api::V1::IdeasController < ApplicationController
     json
   end
 
-  def pagination_meta(collection)
-    {
-      current_page: collection.current_page,
-      total_pages: collection.total_pages,
-      total_count: collection.total_count,
-      per_page: collection.limit_value
-    }
-  end
 end
