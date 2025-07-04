@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { ideasApi, type Idea, type UpdateIdeaInput } from '@/lib/api/ideas'
 import Header from '@/components/Header'
 import { useAuth } from '@/contexts/AuthContext'
+import { CatLoading } from '@/components/ui/cat-loading'
 
 export default function EditIdeaPage() {
   const params = useParams()
@@ -86,13 +87,8 @@ export default function EditIdeaPage() {
       <div className="min-h-screen bg-background">
         <Header />
         <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse">
-            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded mb-8 w-1/3"></div>
-            <div className="space-y-4">
-              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-            </div>
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <CatLoading />
           </div>
         </div>
       </div>
@@ -108,26 +104,26 @@ export default function EditIdeaPage() {
         <div className="mb-6">
           <Link
             href={`/ideas/${params.id}`}
-            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+            className="text-primary hover:text-primary/80"
           >
             ← アイディア詳細に戻る
           </Link>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+        <div className="bg-card rounded-lg shadow-lg p-8 border border-border">
+          <h1 className="text-3xl font-bold text-card-foreground mb-6">
             アイディアを編集
           </h1>
 
           {error && (
-            <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+            <div className="mb-4 p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
                 タイトル <span className="text-red-500">*</span>
               </label>
               <input
@@ -136,13 +132,13 @@ export default function EditIdeaPage() {
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-input text-foreground"
                 placeholder="アイディアのタイトル"
               />
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
                 説明 <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -151,14 +147,14 @@ export default function EditIdeaPage() {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 required
                 rows={6}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-input text-foreground"
                 placeholder="アイディアの詳細な説明"
               />
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="feasibility" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="feasibility" className="block text-sm font-medium text-foreground mb-2">
                   実現可能性 ({formData.feasibility}/5)
                 </label>
                 <input
@@ -170,14 +166,14 @@ export default function EditIdeaPage() {
                   onChange={(e) => setFormData({ ...formData, feasibility: Number(e.target.value) })}
                   className="w-full"
                 />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
                   <span>低い</span>
                   <span>高い</span>
                 </div>
               </div>
 
               <div>
-                <label htmlFor="impact" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="impact" className="block text-sm font-medium text-foreground mb-2">
                   インパクト ({formData.impact}/5)
                 </label>
                 <input
@@ -189,7 +185,7 @@ export default function EditIdeaPage() {
                   onChange={(e) => setFormData({ ...formData, impact: Number(e.target.value) })}
                   className="w-full"
                 />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
                   <span>小さい</span>
                   <span>大きい</span>
                 </div>
@@ -197,14 +193,14 @@ export default function EditIdeaPage() {
             </div>
 
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="status" className="block text-sm font-medium text-foreground mb-2">
                 ステータス
               </label>
               <select
                 id="status"
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-input text-foreground"
               >
                 <option value="draft">草案</option>
                 <option value="validated">検証済み</option>
@@ -214,13 +210,13 @@ export default function EditIdeaPage() {
             </div>
 
             <div className="pt-4 border-t">
-              <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 mb-6">
-                <h3 className="font-medium text-gray-900 dark:text-white mb-2">
+              <div className="bg-secondary rounded-lg p-4 mb-6">
+                <h3 className="font-medium text-secondary-foreground mb-2">
                   元のペインポイント
                 </h3>
                 <Link
                   href={`/pain-points/${idea.pain_point.id}`}
-                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                  className="text-primary hover:text-primary/80"
                 >
                   {idea.pain_point.title} →
                 </Link>
@@ -229,14 +225,14 @@ export default function EditIdeaPage() {
               <div className="flex gap-4 justify-end">
                 <Link
                   href={`/ideas/${params.id}`}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
+                  className="px-6 py-2 border border-border text-secondary-foreground rounded-lg hover:bg-secondary hover:text-secondary-foreground transition-colors"
                 >
                   キャンセル
                 </Link>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSaving ? '保存中...' : '保存'}
                 </button>

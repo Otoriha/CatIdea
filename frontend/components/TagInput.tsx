@@ -120,31 +120,31 @@ export default function TagInput({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label className="block text-sm font-medium text-foreground">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       
       {description && (
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{description}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{description}</p>
       )}
 
       <div className="relative">
         {/* タグ表示エリア + 入力フィールド */}
-        <div className="min-h-[42px] w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 bg-white dark:bg-gray-700">
+        <div className="min-h-[42px] w-full px-3 py-2 border border-border rounded-md focus-within:ring-1 focus-within:ring-primary focus-within:border-primary bg-input">
           <div className="flex flex-wrap gap-2 items-center">
             {/* 既存のタグ */}
             {value.map((tag, index) => (
               <span
                 key={index}
-                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
+                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/20 text-primary"
               >
                 {tag}
                 {!disabled && (
                   <button
                     type="button"
                     onClick={() => removeTag(index)}
-                    className="ml-1 text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100"
+                    className="ml-1 text-primary hover:text-primary/80"
                     aria-label={`${tag}を削除`}
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +166,7 @@ export default function TagInput({
                 onFocus={() => inputValue && setIsOpen(filteredSuggestions.length > 0)}
                 placeholder={value.length === 0 ? placeholder : ''}
                 disabled={disabled}
-                className="flex-1 min-w-[120px] border-none outline-none bg-transparent text-gray-900 dark:text-white placeholder-gray-400 disabled:opacity-50"
+                className="flex-1 min-w-[120px] border-none outline-none bg-transparent text-foreground placeholder-muted-foreground disabled:opacity-50"
               />
             )}
           </div>
@@ -176,16 +176,16 @@ export default function TagInput({
         {isOpen && filteredSuggestions.length > 0 && (
           <div
             ref={dropdownRef}
-            className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-auto"
+            className="absolute z-10 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-60 overflow-auto"
           >
             {filteredSuggestions.map((suggestion, index) => (
               <button
                 key={suggestion}
                 type="button"
-                className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
+                className={`w-full px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground transition-colors ${
                   index === highlightedIndex 
-                    ? 'bg-blue-50 dark:bg-blue-900 text-blue-900 dark:text-blue-100' 
-                    : 'text-gray-900 dark:text-white'
+                    ? 'bg-primary/10 text-primary' 
+                    : 'text-popover-foreground'
                 }`}
                 onClick={() => addTag(suggestion)}
                 onMouseEnter={() => setHighlightedIndex(index)}
@@ -198,7 +198,7 @@ export default function TagInput({
       </div>
 
       {/* ヘルプテキスト */}
-      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+      <div className="flex justify-between text-xs text-muted-foreground">
         <span>Enterキーでタグを追加</span>
         <span>{value.length}/{maxTags}</span>
       </div>
