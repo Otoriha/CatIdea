@@ -134,7 +134,7 @@ export default function EditPainPointPage({ params }: { params: Promise<{ id: st
   if (isLoadingData) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-background">
           <Header />
           <div className="container mx-auto px-4 py-8">
             <div className="flex items-center justify-center h-64">
@@ -152,7 +152,7 @@ export default function EditPainPointPage({ params }: { params: Promise<{ id: st
   if (!painPoint) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-background">
           <Header />
           <div className="container mx-auto px-4 py-8">
             <div className="text-center">
@@ -174,7 +174,7 @@ export default function EditPainPointPage({ params }: { params: Promise<{ id: st
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         <Header />
         
         <div className="container mx-auto px-4 py-8">
