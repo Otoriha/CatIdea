@@ -11,10 +11,9 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface ChatContainerProps {
   painPointId: string;
-  conversationId?: string;
 }
 
-export default function ChatContainer({ painPointId, conversationId }: ChatContainerProps) {
+export default function ChatContainer({ painPointId }: ChatContainerProps) {
   const { token } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversation, setConversation] = useState<AiConversation | null>(null);
@@ -79,7 +78,7 @@ export default function ChatContainer({ painPointId, conversationId }: ChatConta
           setMessages(prev => [...prev, data.message!]);
           setIsTyping(false);
           setStreamingContent(prev => {
-            const { [data.message!.id]: _, ...rest } = prev;
+            const { [data.message!.id]: _removed, ...rest } = prev;
             return rest;
           });
         }
@@ -110,27 +109,6 @@ export default function ChatContainer({ painPointId, conversationId }: ChatConta
     }
   }, []);
 
-  const createConversation = async () => {
-    try {
-      const response = await apiClient.post(`/pain_points/${painPointId}/ai_conversations`, {});
-      console.log('createConversation response:', response.data);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to create conversation:', error);
-      throw error;
-    }
-  };
-
-  const loadConversation = async (conversationId: string) => {
-    try {
-      const response = await apiClient.get(`/ai_conversations/${conversationId}`);
-      setConversation(response.data.conversation);
-      setMessages(response.data.messages || []);
-    } catch (error) {
-      console.error('Failed to load conversation:', error);
-      throw error;
-    }
-  };
 
   useEffect(() => {
     // 既に初期化済みの場合はスキップ
