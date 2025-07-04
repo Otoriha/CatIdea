@@ -4,34 +4,32 @@ import QuickRegistration from "@/components/QuickRegistration";
 import Header from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+import { CatLoading } from "@/components/ui/cat-loading";
 
 export default function Home() {
   const { isLoggedIn, isLoading } = useAuth()
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       <Header />
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             CatIdea
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
+          <p className="text-lg text-muted-foreground">
             日常の課題をアイデアの種に変える
           </p>
         </header>
         
         {isLoading ? (
           <div className="text-center">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
-              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-            </div>
+            <CatLoading />
           </div>
         ) : isLoggedIn ? (
           <>
             <section className="mb-16">
-              <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6 text-center">
+              <h2 className="text-2xl font-semibold text-foreground mb-6 text-center">
                 ペインポイントをクイック登録
               </h2>
               <QuickRegistration />
@@ -39,7 +37,7 @@ export default function Home() {
               <div className="text-center mt-6">
                 <Link
                   href="/pain-points/new"
-                  className="inline-flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 font-medium transition-colors"
+                  className="inline-flex items-center text-primary hover:text-primary/80 font-medium transition-colors"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -51,22 +49,22 @@ export default function Home() {
           </>
         ) : (
           <section className="mb-16 text-center">
-            <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6">
+            <h2 className="text-2xl font-semibold text-foreground mb-6">
               始めましょう
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
               ペインポイントを記録してアイデアを生み出すために、まずはログインまたはサインアップしてください。
             </p>
             <div className="space-x-4">
               <Link
                 href="/login"
-                className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                className="inline-block bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg font-medium transition-colors"
               >
                 ログイン
               </Link>
               <Link
                 href="/signup"
-                className="inline-block bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                className="inline-block bg-secondary hover:bg-secondary/80 text-secondary-foreground px-6 py-3 rounded-lg font-medium transition-colors"
               >
                 サインアップ
               </Link>
@@ -75,11 +73,11 @@ export default function Home() {
         )}
         
         <section className="max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+          <div className="bg-card rounded-lg shadow-md p-6 border border-border">
+            <h3 className="text-xl font-semibold text-card-foreground mb-4">
               使い方
             </h3>
-            <ol className="list-decimal list-inside space-y-2 text-gray-600 dark:text-gray-300">
+            <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
               <li>日常で感じた課題や不便なことを入力</li>
               <li>エンターキーですぐに保存</li>
               <li>後でじっくり分析し、アイデアへと昇華</li>
