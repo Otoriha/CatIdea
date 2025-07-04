@@ -1,6 +1,6 @@
 class Api::V1::PainPointsController < ApplicationController
   before_action :require_login
-  before_action :set_pain_point, only: [:show, :update, :destroy]
+  before_action :set_pain_point, only: [:show, :update, :destroy, :related]
 
   def index
     @pain_points = current_user.pain_points.includes(:tags)
@@ -134,6 +134,15 @@ class Api::V1::PainPointsController < ApplicationController
         errors: @pain_point.errors.full_messages
       }, status: :unprocessable_entity
     end
+  end
+
+  def related
+    service = RelatedPainPointsService.new(@pain_point, user: current_user)
+    related_pain_points = service.find_related(limit: params[:limit] || 5)
+    
+    render json: {
+      related_pain_points: related_pain_points.map { |pp| pain_point_response(pp) }
+    }
   end
 
   private

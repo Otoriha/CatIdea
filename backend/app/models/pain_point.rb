@@ -8,6 +8,7 @@ class PainPoint < ApplicationRecord
   has_many :pain_point_tags, dependent: :destroy
   has_many :tags, through: :pain_point_tags
   has_one :ai_conversation, dependent: :destroy
+  has_many :ideas, dependent: :destroy
   has_many_attached :images
 
   scope :by_importance, ->(importance) { where(importance: importance) }

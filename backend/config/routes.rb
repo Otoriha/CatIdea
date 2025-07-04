@@ -8,8 +8,15 @@ Rails.application.routes.draw do
       # Pain Points routes
       post 'pain_points/quick', to: 'pain_points#quick_create'
       resources :pain_points, except: [:new, :edit] do
+        member do
+          get 'related'
+        end
         resources :ai_conversations, only: [:create]
+        resources :ideas, only: [:create]
       end
+      
+      # Ideas routes
+      resources :ideas, except: [:new, :create]
       
       # Tags routes
       resources :tags, only: [:index]
