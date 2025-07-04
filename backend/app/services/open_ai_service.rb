@@ -168,9 +168,8 @@ class OpenAiService
 
       【タイトル】#{pain_point.title}
       【説明】#{pain_point.description}
-      【カテゴリ】#{pain_point.category}
-      【重要度】#{pain_point.severity}
-      【頻度】#{pain_point.frequency}
+      【重要度】#{pain_point.importance}
+      【緊急度】#{pain_point.urgency}
 
       このペインポイントについて、解決策を一緒に考えましょう。
     PROMPT
@@ -180,9 +179,8 @@ class OpenAiService
     <<~PROMPT
       ペインポイント：「#{pain_point.title}」
       詳細：#{pain_point.description}
-      カテゴリ：#{pain_point.category}
-      重要度：#{pain_point.severity}/5
-      頻度：#{pain_point.frequency}
+      重要度：#{pain_point.importance}/5
+      緊急度：#{pain_point.urgency}/5
     PROMPT
   end
 

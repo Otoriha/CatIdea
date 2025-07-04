@@ -8,7 +8,8 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft, Edit, Trash2, MessageSquare } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, MessageSquare, X } from 'lucide-react'
+import ChatContainer from '@/components/chat/ChatContainer'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,6 +43,8 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
   const router = useRouter()
   const [painPoint, setPainPoint] = useState<PainPoint | null>(null)
   const [loading, setLoading] = useState(true)
+  const [showChat, setShowChat] = useState(false)
+  const [conversationId, setConversationId] = useState<string | null>(null)
   const resolvedParams = use(params)
   const id = resolvedParams.id
 
@@ -72,12 +75,7 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
   }
 
   const handleStartConversation = async () => {
-    try {
-      const response = await apiClient.post(`/pain_points/${id}/ai_conversations`)
-      router.push(`/ai-conversations/${response.data.ai_conversation.id}`)
-    } catch (error) {
-      console.error('Failed to start conversation:', error)
-    }
+    setShowChat(true)
   }
 
   const getImportanceLabel = (importance: number) => {
@@ -221,12 +219,35 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
         </CardContent>
       </Card>
 
-      <div className="mt-8 flex justify-center">
-        <Button size="lg" onClick={handleStartConversation}>
-          <MessageSquare className="w-5 h-5 mr-2" />
-          AIと会話を開始
-        </Button>
-      </div>
+      {!showChat && (
+        <div className="mt-8 flex justify-center">
+          <Button size="lg" onClick={handleStartConversation}>
+            <MessageSquare className="w-5 h-5 mr-2" />
+            AIと会話を開始
+          </Button>
+        </div>
+      )}
+
+      {showChat && (
+        <div className="mt-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">AI アシスタント</h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowChat(false)}
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+          <div className="h-[600px]">
+            <ChatContainer
+              painPointId={id}
+              conversationId={conversationId}
+            />
+          </div>
+        </div>
+      )}
         </div>
       </div>
     </ProtectedRoute>

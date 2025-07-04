@@ -11,6 +11,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null
+  token: string | null
   isLoading: boolean
   isLoggedIn: boolean
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>
@@ -36,6 +37,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
+  const [token, setToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
@@ -43,6 +45,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkAuth = async () => {
     try {
+      const storedToken = localStorage.getItem('token')
+      if (storedToken) {
+        setToken(storedToken)
+      }
+      
       const response = await fetch(`${apiUrl}/auth/me`, {
         credentials: 'include',
       })
@@ -55,15 +62,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } else {
           setUser(null)
           setIsLoggedIn(false)
+          setToken(null)
         }
       } else {
         setUser(null)
         setIsLoggedIn(false)
+        setToken(null)
       }
     } catch (error) {
       console.error('Auth check failed:', error)
       setUser(null)
       setIsLoggedIn(false)
+      setToken(null)
     } finally {
       setIsLoading(false)
     }
@@ -85,6 +95,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.ok) {
         setUser(data.user)
         setIsLoggedIn(true)
+        if (data.token) {
+          localStorage.setItem('token', data.token)
+          setToken(data.token)
+        }
         return { success: true }
       } else {
         return { success: false, message: data.message }
@@ -111,6 +125,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.ok) {
         setUser(data.user)
         setIsLoggedIn(true)
+        if (data.token) {
+          localStorage.setItem('token', data.token)
+          setToken(data.token)
+        }
         return { success: true }
       } else {
         return { success: false, message: data.message }
@@ -132,6 +150,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setUser(null)
       setIsLoggedIn(false)
+      setToken(null)
+      localStorage.removeItem('token')
     }
   }
 
@@ -161,6 +181,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value: AuthContextType = {
     user,
+    token,
     isLoading,
     isLoggedIn,
     login,
