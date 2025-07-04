@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Edit, Trash2, MessageSquare, X, Lightbulb } from 'lucide-react'
 import ChatContainer from '@/components/chat/ChatContainer'
 import CreateIdeaModal from '@/components/CreateIdeaModal'
+import { CatLoading } from '@/components/ui/cat-loading'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -105,10 +106,12 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-background">
           <Header />
           <div className="container mx-auto px-4 py-8">
-            <div className="text-center">読み込み中...</div>
+            <div className="flex justify-center items-center min-h-[60vh]">
+              <CatLoading />
+            </div>
           </div>
         </div>
       </ProtectedRoute>
@@ -188,7 +191,7 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
           {painPoint.description && (
             <div>
               <h3 className="font-semibold mb-2">説明</h3>
-              <p className="text-gray-600 whitespace-pre-wrap">{painPoint.description}</p>
+              <p className="text-muted-foreground whitespace-pre-wrap">{painPoint.description}</p>
             </div>
           )}
 
@@ -221,7 +224,7 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
             </div>
           )}
 
-          <div className="flex justify-between text-sm text-gray-500">
+          <div className="flex justify-between text-sm text-muted-foreground">
             <span>作成日: {new Date(painPoint.created_at).toLocaleString('ja-JP')}</span>
             <span>更新日: {new Date(painPoint.updated_at).toLocaleString('ja-JP')}</span>
           </div>
