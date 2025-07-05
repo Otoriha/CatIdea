@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { ideasApi, type Idea } from '@/lib/api/ideas'
 import Header from '@/components/Header'
 import { useAuth } from '@/contexts/AuthContext'
+import { CatLoading } from '@/components/ui/cat-loading'
 
 export default function IdeasPage() {
   const router = useRouter()
@@ -75,19 +76,11 @@ export default function IdeasPage() {
 
   if (authLoading || isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         <Header />
         <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded mb-4 w-1/4"></div>
-            <div className="space-y-4">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                </div>
-              ))}
-            </div>
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <CatLoading />
           </div>
         </div>
       </div>
@@ -95,14 +88,14 @@ export default function IdeasPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-3xl font-bold text-foreground mb-4">
             アイディア一覧
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-muted-foreground">
             ペインポイントから昇華されたアイディアを管理
           </p>
         </div>
@@ -112,7 +105,7 @@ export default function IdeasPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+            className="px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-card text-card-foreground"
           >
             <option value="">すべてのステータス</option>
             <option value="draft">草案</option>
@@ -124,7 +117,7 @@ export default function IdeasPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+            className="px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-card text-card-foreground"
           >
             <option value="">作成日順</option>
             <option value="priority">優先度順</option>
@@ -140,13 +133,13 @@ export default function IdeasPage() {
         )}
 
         {ideas.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
+          <div className="bg-card rounded-lg shadow p-8 text-center border border-border">
+            <p className="text-muted-foreground mb-4">
               アイディアがまだありません
             </p>
             <Link
               href="/pain-points"
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+              className="text-primary hover:text-primary/80"
             >
               ペインポイント一覧へ移動して、アイディアに昇華してみましょう
             </Link>
@@ -160,14 +153,14 @@ export default function IdeasPage() {
                 <Link
                   key={idea.id}
                   href={`/ideas/${idea.id}`}
-                  className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-6"
+                  className="block bg-card rounded-lg shadow hover:shadow-lg transition-shadow p-6 border border-border">
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1">
-                      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                      <h2 className="text-xl font-semibold text-card-foreground mb-2">
                         {idea.title}
                       </h2>
-                      <p className="text-gray-600 dark:text-gray-300 line-clamp-2">
+                      <p className="text-muted-foreground line-clamp-2">
                         {idea.description}
                       </p>
                     </div>
@@ -178,15 +171,15 @@ export default function IdeasPage() {
 
                   <div className="flex items-center gap-6 text-sm">
                     <div className="flex items-center gap-2">
-                      <span className="text-gray-500">元のペイン:</span>
-                      <span className="text-gray-700 dark:text-gray-300">
+                      <span className="text-muted-foreground">元のペイン:</span>
+                      <span className="text-card-foreground">
                         {idea.pain_point.title}
                       </span>
                     </div>
                     
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-1">
-                        <span className="text-gray-500">実現可能性:</span>
+                        <span className="text-muted-foreground">実現可能性:</span>
                         <div className="flex gap-0.5">
                           {[1, 2, 3, 4, 5].map((i) => (
                             <div
@@ -194,7 +187,7 @@ export default function IdeasPage() {
                               className={`w-2 h-2 rounded-full ${
                                 i <= idea.feasibility
                                   ? 'bg-blue-500'
-                                  : 'bg-gray-300 dark:bg-gray-600'
+                                  : 'bg-muted'
                               }`}
                             />
                           ))}
@@ -202,7 +195,7 @@ export default function IdeasPage() {
                       </div>
                       
                       <div className="flex items-center gap-1">
-                        <span className="text-gray-500">インパクト:</span>
+                        <span className="text-muted-foreground">インパクト:</span>
                         <div className="flex gap-0.5">
                           {[1, 2, 3, 4, 5].map((i) => (
                             <div
@@ -210,7 +203,7 @@ export default function IdeasPage() {
                               className={`w-2 h-2 rounded-full ${
                                 i <= idea.impact
                                   ? 'bg-orange-500'
-                                  : 'bg-gray-300 dark:bg-gray-600'
+                                  : 'bg-muted'
                               }`}
                             />
                           ))}

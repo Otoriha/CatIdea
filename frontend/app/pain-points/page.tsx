@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Search, Filter, Plus, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useDebounce } from '@/hooks/use-debounce'
+import { FAB } from '@/components/ui/fab'
+import { CatLoading } from '@/components/ui/cat-loading'
 
 interface Tag {
   id: number
@@ -116,10 +118,12 @@ export default function PainPointsPage() {
   if (loading && painPoints.length === 0) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-background">
           <Header />
           <div className="container mx-auto px-4 py-8">
-            <div className="text-center">読み込み中...</div>
+            <div className="flex justify-center items-center min-h-[60vh]">
+              <CatLoading />
+            </div>
           </div>
         </div>
       </ProtectedRoute>
@@ -128,7 +132,7 @@ export default function PainPointsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         <Header />
         <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -280,6 +284,14 @@ export default function PainPointsPage() {
         </div>
       )}
         </div>
+        
+        {/* FAB for creating new pain point */}
+        <FAB 
+          onClick={() => router.push('/pain-points/new')}
+          aria-label="新規ペインポイント作成"
+        >
+          <Plus className="h-6 w-6" />
+        </FAB>
       </div>
     </ProtectedRoute>
   )

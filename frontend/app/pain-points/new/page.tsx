@@ -75,15 +75,15 @@ export default function NewPainPointPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         <Header />
         
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
               ペインポイント詳細登録
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-muted-foreground">
               感じた課題や不便さを詳しく記録して、後でアイデアに発展させましょう。
             </p>
           </div>
@@ -106,7 +106,7 @@ export default function NewPainPointPage() {
           )}
 
           {/* フォーム */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="bg-card rounded-lg shadow-sm border border-border p-6">
             <DetailedPainPointForm 
               onSubmit={handleSubmit}
               isLoading={isLoading}

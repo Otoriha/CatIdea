@@ -182,7 +182,7 @@ export default function DetailedPainPointForm({
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* タイトル */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
             タイトル <span className="text-red-500">*</span>
           </label>
           <input
@@ -191,25 +191,25 @@ export default function DetailedPainPointForm({
             value={formData.title}
             onChange={handleInputChange('title')}
             disabled={isLoading}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-colors ${
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-input text-foreground transition-colors ${
               errors.title 
-                ? 'border-red-500 dark:border-red-500' 
-                : 'border-gray-300 dark:border-gray-600'
+                ? 'border-destructive' 
+                : 'border-border'
             }`}
             placeholder="ペインポイントを一言で表現してください"
             maxLength={100}
           />
           {errors.title && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.title}</p>
+            <p className="mt-1 text-sm text-destructive">{errors.title}</p>
           )}
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-xs text-muted-foreground">
             {formData.title.length}/100文字
           </p>
         </div>
 
         {/* 状況 */}
         <div>
-          <label htmlFor="situation" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="situation" className="block text-sm font-medium text-foreground mb-2">
             状況 <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -220,23 +220,23 @@ export default function DetailedPainPointForm({
             rows={4}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-colors resize-y ${
               errors.situation 
-                ? 'border-red-500 dark:border-red-500' 
-                : 'border-gray-300 dark:border-gray-600'
+                ? 'border-destructive' 
+                : 'border-border'
             }`}
             placeholder="どのような状況でこの問題が発生しますか？具体的に説明してください。"
             maxLength={500}
           />
           {errors.situation && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.situation}</p>
+            <p className="mt-1 text-sm text-destructive">{errors.situation}</p>
           )}
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-xs text-muted-foreground">
             {formData.situation.length}/500文字
           </p>
         </div>
 
         {/* 感じた不便さ */}
         <div>
-          <label htmlFor="inconvenience" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="inconvenience" className="block text-sm font-medium text-foreground mb-2">
             感じた不便さ <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -247,23 +247,23 @@ export default function DetailedPainPointForm({
             rows={4}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-colors resize-y ${
               errors.inconvenience 
-                ? 'border-red-500 dark:border-red-500' 
-                : 'border-gray-300 dark:border-gray-600'
+                ? 'border-destructive' 
+                : 'border-border'
             }`}
             placeholder="具体的にどのような不便さを感じましたか？なぜ問題だと思うのかを説明してください。"
             maxLength={500}
           />
           {errors.inconvenience && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.inconvenience}</p>
+            <p className="mt-1 text-sm text-destructive">{errors.inconvenience}</p>
           )}
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-xs text-muted-foreground">
             {formData.inconvenience.length}/500文字
           </p>
         </div>
 
         {/* 影響範囲 */}
         <div>
-          <label htmlFor="impact_scope" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="impact_scope" className="block text-sm font-medium text-foreground mb-2">
             影響範囲
           </label>
           <textarea
@@ -274,16 +274,16 @@ export default function DetailedPainPointForm({
             rows={3}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-colors resize-y ${
               errors.impact_scope 
-                ? 'border-red-500 dark:border-red-500' 
-                : 'border-gray-300 dark:border-gray-600'
+                ? 'border-destructive' 
+                : 'border-border'
             }`}
             placeholder="この問題は誰に・どのくらいの頻度で・どの程度の影響を与えますか？（任意）"
             maxLength={300}
           />
           {errors.impact_scope && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.impact_scope}</p>
+            <p className="mt-1 text-sm text-destructive">{errors.impact_scope}</p>
           )}
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-xs text-muted-foreground">
             {formData.impact_scope.length}/300文字
           </p>
         </div>
@@ -310,7 +310,7 @@ export default function DetailedPainPointForm({
             description="この問題がどの程度重要か評価してください"
           />
           {errors.importance && (
-            <p className="text-sm text-red-600 dark:text-red-400 -mt-6">{errors.importance}</p>
+            <p className="text-sm text-destructive -mt-6">{errors.importance}</p>
           )}
 
           <RatingSelector
@@ -322,21 +322,21 @@ export default function DetailedPainPointForm({
             description="この問題がどの程度緊急か評価してください"
           />
           {errors.urgency && (
-            <p className="text-sm text-red-600 dark:text-red-400 -mt-6">{errors.urgency}</p>
+            <p className="text-sm text-destructive -mt-6">{errors.urgency}</p>
           )}
         </div>
 
         {/* 下書き情報 */}
         {isDirty && !isEditing && (
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
+          <div className="bg-primary/10 border border-primary/20 rounded-md p-4">
             <div className="flex justify-between items-center">
-              <p className="text-sm text-blue-700 dark:text-blue-300">
+              <p className="text-sm text-primary">
                 入力内容は自動的に下書きとして保存されています
               </p>
               <button
                 type="button"
                 onClick={clearDraft}
-                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline"
+                className="text-sm text-primary hover:text-primary/80 underline"
               >
                 下書きをクリア
               </button>
@@ -345,19 +345,19 @@ export default function DetailedPainPointForm({
         )}
 
         {/* アクションボタン */}
-        <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex justify-end space-x-4 pt-6 border-t border-border">
           <button
             type="button"
             onClick={handleCancel}
             disabled={isLoading}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 text-sm font-medium text-secondary-foreground bg-secondary border border-border rounded-md hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             キャンセル
           </button>
           <button
             type="submit"
             disabled={isLoading}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading ? (
               <span className="flex items-center">

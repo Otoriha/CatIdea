@@ -43,13 +43,13 @@ export default function RatingSelector({
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label className="block text-sm font-medium text-foreground">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       
       {description && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+        <p className="text-sm text-muted-foreground">{description}</p>
       )}
       
       <div className="flex items-center space-x-4">
@@ -71,11 +71,11 @@ export default function RatingSelector({
                 disabled={disabled}
                 className={`
                   w-8 h-8 rounded-full border-2 transition-all duration-200 
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                  focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
                   disabled:opacity-50 disabled:cursor-not-allowed
                   ${shouldHighlight 
-                    ? 'bg-blue-500 border-blue-500 text-white' 
-                    : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-400 hover:border-blue-400'
+                    ? 'bg-primary border-primary text-primary-foreground' 
+                    : 'bg-card border-border text-muted-foreground hover:border-primary'
                   }
                   ${isHovered ? 'scale-110' : ''}
                 `}
@@ -96,7 +96,7 @@ export default function RatingSelector({
         )}
       </div>
       
-      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+      <div className="flex justify-between text-xs text-muted-foreground">
         <span>低い</span>
         <span>高い</span>
       </div>

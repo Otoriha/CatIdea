@@ -6,6 +6,7 @@ import { apiClient } from '@/lib/api-client'
 import Header from '@/components/Header'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import DetailedPainPointForm from '@/components/DetailedPainPointForm'
+import { CatLoading } from '@/components/ui/cat-loading'
 
 interface PainPoint {
   id: number
@@ -134,14 +135,11 @@ export default function EditPainPointPage({ params }: { params: Promise<{ id: st
   if (isLoadingData) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-background">
           <Header />
           <div className="container mx-auto px-4 py-8">
-            <div className="flex items-center justify-center h-64">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                <p className="text-gray-600 dark:text-gray-400">読み込み中...</p>
-              </div>
+            <div className="flex justify-center items-center min-h-[60vh]">
+              <CatLoading />
             </div>
           </div>
         </div>
@@ -152,11 +150,11 @@ export default function EditPainPointPage({ params }: { params: Promise<{ id: st
   if (!painPoint) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-background">
           <Header />
           <div className="container mx-auto px-4 py-8">
             <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              <h1 className="text-2xl font-bold text-foreground mb-4">
                 ペインポイントが見つかりません
               </h1>
               <button
@@ -174,15 +172,15 @@ export default function EditPainPointPage({ params }: { params: Promise<{ id: st
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         <Header />
         
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
               ペインポイント編集
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-muted-foreground">
               ペインポイントの内容を更新してください。
             </p>
           </div>
@@ -191,13 +189,13 @@ export default function EditPainPointPage({ params }: { params: Promise<{ id: st
           {message && (
             <div className={`mb-6 p-4 rounded-md ${
               message.type === 'success' 
-                ? 'bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-800' 
-                : 'bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800'
+                ? 'bg-green-500/10 border border-green-500/20' 
+                : 'bg-destructive/10 border border-destructive/20'
             }`}>
               <div className={`text-sm ${
                 message.type === 'success' 
-                  ? 'text-green-600 dark:text-green-400' 
-                  : 'text-red-600 dark:text-red-400'
+                  ? 'text-green-600' 
+                  : 'text-destructive'
               }`}>
                 {message.text}
               </div>
@@ -205,7 +203,7 @@ export default function EditPainPointPage({ params }: { params: Promise<{ id: st
           )}
 
           {/* フォーム */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="bg-card rounded-lg shadow-sm border border-border p-6">
             <DetailedPainPointForm 
               initialData={getInitialFormData()}
               onSubmit={handleSubmit}
