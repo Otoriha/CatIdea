@@ -14,6 +14,14 @@ interface CreateIdeaModalProps {
     title?: string
     description?: string
   }
+  aiProcessedContent?: {
+    analysis: {
+      problem_definition: string
+      target_users: string
+      solution_approach: string
+      expected_impact: string
+    }
+  }
 }
 
 export default function CreateIdeaModal({
@@ -23,14 +31,33 @@ export default function CreateIdeaModal({
   onClose,
   fromConversation = false,
   suggestedContent = {},
+  aiProcessedContent,
 }: CreateIdeaModalProps) {
   const router = useRouter()
   const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
+  // AI処理結果がある場合は、それを使用してデフォルト値を設定
+  const getDefaultDescription = () => {
+    if (aiProcessedContent) {
+      return `## 問題の定義
+${aiProcessedContent.analysis.problem_definition}
+
+## 対象ユーザー
+${aiProcessedContent.analysis.target_users}
+
+## 解決アプローチ
+${aiProcessedContent.analysis.solution_approach}
+
+## 期待される効果
+${aiProcessedContent.analysis.expected_impact}`
+    }
+    return suggestedContent.description || ''
+  }
+  
   const [formData, setFormData] = useState<CreateIdeaInput>({
     title: suggestedContent.title || '',
-    description: suggestedContent.description || '',
+    description: getDefaultDescription(),
     feasibility: 3,
     impact: 3,
     status: 'draft',

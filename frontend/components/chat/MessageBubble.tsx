@@ -18,14 +18,14 @@ export default function MessageBubble({ message, streamingContent }: MessageBubb
       <div
         className={`max-w-[70%] rounded-lg px-4 py-2 ${
           isUser
-            ? 'bg-blue-600 text-white'
-            : 'bg-gray-100 text-gray-900'
+            ? 'bg-primary text-primary-foreground'
+            : 'bg-secondary text-secondary-foreground'
         }`}
       >
         <p className="whitespace-pre-wrap break-words">{displayContent}</p>
         
         <div className={`flex items-center gap-2 mt-1 text-xs ${
-          isUser ? 'text-blue-100' : 'text-gray-500'
+          isUser ? 'text-primary-foreground/70' : 'text-muted-foreground'
         }`}>
           <time dateTime={message.created_at}>
             {format(new Date(message.created_at), 'HH:mm', { locale: ja })}

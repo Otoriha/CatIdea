@@ -10,6 +10,7 @@ export default function QuickRegistration({ onSuccess }: QuickRegistrationProps)
   const [content, setContent] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+  const [isComposing, setIsComposing] = useState(false)
 
   const handleSubmit = async (e?: FormEvent) => {
     e?.preventDefault()
@@ -47,7 +48,7 @@ export default function QuickRegistration({ onSuccess }: QuickRegistrationProps)
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !isComposing) {
       e.preventDefault()
       handleSubmit()
     }
@@ -61,6 +62,8 @@ export default function QuickRegistration({ onSuccess }: QuickRegistrationProps)
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleKeyDown}
+          onCompositionStart={() => setIsComposing(true)}
+          onCompositionEnd={() => setIsComposing(false)}
           placeholder="今感じている課題を入力してください..."
           className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors text-base md:text-sm"
           disabled={isLoading}

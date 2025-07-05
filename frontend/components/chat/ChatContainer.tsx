@@ -10,8 +10,9 @@ import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/contexts/AuthContext';
 import { painPointsApi, type PainPoint } from '@/lib/api/pain-points';
 import CreateIdeaModal from '@/components/CreateIdeaModal';
+import AiProcessingModal from '@/components/AiProcessingModal';
 import Link from 'next/link';
-import { Lightbulb } from 'lucide-react';
+import { Lightbulb, Sparkles } from 'lucide-react';
 
 interface ChatContainerProps {
   painPointId: string;
@@ -27,7 +28,9 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
   const [error, setError] = useState<string | null>(null);
   const [relatedPainPoints, setRelatedPainPoints] = useState<PainPoint[]>([]);
   const [showCreateIdeaModal, setShowCreateIdeaModal] = useState(false);
+  const [showAiProcessingModal, setShowAiProcessingModal] = useState(false);
   const [selectedPainPoint, setSelectedPainPoint] = useState<PainPoint | null>(null);
+  const [currentPainPoint, setCurrentPainPoint] = useState<PainPoint | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const initializedRef = useRef(false);
 
@@ -80,7 +83,6 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
 
       case 'message':
       case 'ai_message':
-      case 'user_message':
         if (data.message) {
           setMessages(prev => [...prev, data.message!]);
           setIsTyping(false);
@@ -88,6 +90,17 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
             const { [data.message!.id]: _removed, ...rest } = prev;
             return rest;
           });
+        }
+        break;
+        
+      case 'user_message':
+        if (data.message) {
+          // 一時メッセージを実際のメッセージで置き換える
+          setMessages(prev => prev.map(msg => 
+            msg.id.startsWith('temp-') && msg.content === data.message!.content
+              ? data.message!
+              : msg
+          ));
         }
         break;
 
@@ -138,18 +151,23 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
     initializeChat();
   }, []); // 空の依存配列で、コンポーネントマウント時のみ実行
 
-  // 関連ペインポイントを取得
+  // 関連ペインポイントと現在のペインポイントを取得
   useEffect(() => {
-    const fetchRelatedPainPoints = async () => {
+    const fetchData = async () => {
       try {
-        const response = await painPointsApi.getRelatedPainPoints(painPointId, 5);
-        setRelatedPainPoints(response.related_pain_points);
+        // 現在のペインポイントを取得
+        const currentResponse = await apiClient.get(`/pain_points/${painPointId}`);
+        setCurrentPainPoint(currentResponse.data.pain_point);
+        
+        // 関連ペインポイントを取得
+        const relatedResponse = await painPointsApi.getRelatedPainPoints(painPointId, 5);
+        setRelatedPainPoints(relatedResponse.related_pain_points);
       } catch (error) {
-        console.error('Failed to fetch related pain points:', error);
+        console.error('Failed to fetch pain points:', error);
       }
     };
 
-    fetchRelatedPainPoints();
+    fetchData();
   }, [painPointId]);
 
   const handleSendMessage = async (content: string) => {
@@ -193,28 +211,33 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
     setShowCreateIdeaModal(true);
   };
 
+  const handleAiProcess = (painPoint: PainPoint) => {
+    setSelectedPainPoint(painPoint);
+    setShowAiProcessingModal(true);
+  };
+
   return (
     <div className="flex h-full">
       {/* メインチャットエリア */}
-      <div className="flex-1 flex flex-col bg-white rounded-lg shadow-lg">
+      <div className="flex-1 flex flex-col bg-card rounded-lg shadow-lg border border-border">
         {/* ヘッダー */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-border">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold text-gray-900">AI アシスタント</h3>
-            {conversation && (
+            <h3 className="text-lg font-semibold text-foreground">AI アシスタント</h3>
+            {conversation && currentPainPoint && (
               <button
-                onClick={() => handleCreateIdea({ id: Number(painPointId), title: '現在のペインポイント' } as PainPoint)}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                onClick={() => handleAiProcess(currentPainPoint)}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
-                <Lightbulb className="w-4 h-4" />
-                アイディアに昇華
+                <Sparkles className="w-4 h-4" />
+                AI自動処理
               </button>
             )}
           </div>
           {conversation && (
             <div className="flex items-center gap-2 mt-1">
               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                isConnected ? 'bg-green-500/10 text-green-600 dark:text-green-400' : 'bg-destructive/10 text-destructive'
               }`}>
                 {isConnected ? '接続中' : '切断'}
               </span>
@@ -225,7 +248,7 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
         {/* メッセージエリア */}
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+            <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-md">
               {error}
             </div>
           )}
@@ -244,7 +267,7 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
         </div>
 
         {/* 入力エリア */}
-        <div className="px-6 py-4 border-t border-gray-200">
+        <div className="px-6 py-4 border-t border-border bg-secondary/20">
           <MessageInput
             onSendMessage={handleSendMessage}
             disabled={!isConnected || isSending || conversation?.status === 'cost_limit_reached'}
@@ -261,38 +284,38 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
 
       {/* 関連ペインポイントサイドバー */}
       {relatedPainPoints.length > 0 && (
-        <div className="w-80 bg-gray-50 border-l border-gray-200 p-4 overflow-y-auto">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">関連するペインポイント</h3>
+        <div className="w-80 bg-secondary/10 border-l border-border p-4 overflow-y-auto">
+          <h3 className="text-lg font-semibold text-foreground mb-4">関連するペインポイント</h3>
           <div className="space-y-3">
             {relatedPainPoints.map((painPoint) => (
-              <div key={painPoint.id} className="bg-white rounded-lg p-3 shadow-sm">
+              <div key={painPoint.id} className="bg-card rounded-lg p-3 shadow-sm border border-border">
                 <Link
                   href={`/pain-points/${painPoint.id}`}
-                  className="block hover:bg-gray-50 -m-3 p-3 rounded-lg transition-colors"
+                  className="block hover:bg-accent/10 -m-3 p-3 rounded-lg transition-colors"
                 >
-                  <h4 className="font-medium text-gray-900 mb-1 line-clamp-2">
+                  <h4 className="font-medium text-card-foreground mb-1 line-clamp-2">
                     {painPoint.title}
                   </h4>
                   {painPoint.description && (
-                    <p className="text-sm text-gray-600 line-clamp-2">
+                    <p className="text-sm text-muted-foreground line-clamp-2">
                       {painPoint.description}
                     </p>
                   )}
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-muted-foreground">
                       重要度: {painPoint.importance}/5
                     </span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-muted-foreground">
                       緊急度: {painPoint.urgency}/5
                     </span>
                   </div>
                 </Link>
                 <button
-                  onClick={() => handleCreateIdea(painPoint)}
-                  className="mt-2 w-full flex items-center justify-center gap-1 px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition-colors"
+                  onClick={() => handleAiProcess(painPoint)}
+                  className="mt-2 w-full flex items-center justify-center gap-1 px-3 py-1.5 text-xs bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded transition-colors"
                 >
-                  <Lightbulb className="w-3 h-3" />
-                  アイディアに昇華
+                  <Sparkles className="w-3 h-3" />
+                  AI自動処理
                 </button>
               </div>
             ))}
@@ -302,16 +325,40 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
 
       {/* アイディア作成モーダル */}
       {selectedPainPoint && (
-        <CreateIdeaModal
-          painPointId={selectedPainPoint.id}
-          painPointTitle={selectedPainPoint.title}
-          isOpen={showCreateIdeaModal}
-          onClose={() => {
-            setShowCreateIdeaModal(false);
-            setSelectedPainPoint(null);
-          }}
-          fromConversation={true}
-        />
+        <>
+          <CreateIdeaModal
+            painPointId={selectedPainPoint.id}
+            painPointTitle={selectedPainPoint.title}
+            isOpen={showCreateIdeaModal}
+            onClose={() => {
+              setShowCreateIdeaModal(false);
+              setSelectedPainPoint(null);
+            }}
+            fromConversation={true}
+          />
+          <AiProcessingModal
+            isOpen={showAiProcessingModal}
+            onClose={() => {
+              setShowAiProcessingModal(false);
+              setSelectedPainPoint(null);
+            }}
+            painPointId={selectedPainPoint.id}
+            painPointTitle={selectedPainPoint.title}
+            currentProcessCount={selectedPainPoint.ai_process_count || 0}
+            onProcessComplete={() => {
+              // 処理完了後に現在のペインポイントを再取得
+              const fetchCurrentPainPoint = async () => {
+                try {
+                  const response = await apiClient.get(`/pain_points/${painPointId}`);
+                  setCurrentPainPoint(response.data.pain_point);
+                } catch (error) {
+                  console.error('Failed to refresh pain point:', error);
+                }
+              };
+              fetchCurrentPainPoint();
+            }}
+          />
+        </>
       )}
     </div>
   );

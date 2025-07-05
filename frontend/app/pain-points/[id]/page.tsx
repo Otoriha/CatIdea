@@ -8,9 +8,10 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft, Edit, Trash2, MessageSquare, X, Lightbulb } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, MessageSquare, X, Lightbulb, Sparkles } from 'lucide-react'
 import ChatContainer from '@/components/chat/ChatContainer'
 import CreateIdeaModal from '@/components/CreateIdeaModal'
+import AiProcessingModal from '@/components/AiProcessingModal'
 import { CatLoading } from '@/components/ui/cat-loading'
 import {
   AlertDialog,
@@ -39,6 +40,7 @@ interface PainPoint {
   images: string[]
   created_at: string
   updated_at: string
+  ai_process_count?: number
 }
 
 export default function PainPointDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -48,6 +50,7 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
   const [showChat, setShowChat] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
   const [showCreateIdeaModal, setShowCreateIdeaModal] = useState(false)
+  const [showAiProcessingModal, setShowAiProcessingModal] = useState(false)
   const resolvedParams = use(params)
   const id = resolvedParams.id
 
@@ -232,8 +235,20 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
       </Card>
 
       {!showChat && (
-        <div className="mt-8 flex justify-center">
-          <Button size="lg" onClick={handleStartConversation}>
+        <div className="mt-8 flex justify-center gap-4">
+          <Button 
+            size="lg" 
+            onClick={() => setShowAiProcessingModal(true)}
+            className="bg-primary hover:bg-primary/90"
+          >
+            <Sparkles className="w-5 h-5 mr-2" />
+            AI自動処理
+          </Button>
+          <Button 
+            size="lg" 
+            variant="outline"
+            onClick={handleStartConversation}
+          >
             <MessageSquare className="w-5 h-5 mr-2" />
             AIと会話を開始
           </Button>
@@ -262,12 +277,22 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
       )}
 
       {painPoint && (
-        <CreateIdeaModal
-          painPointId={painPoint.id}
-          painPointTitle={painPoint.title}
-          isOpen={showCreateIdeaModal}
-          onClose={() => setShowCreateIdeaModal(false)}
-        />
+        <>
+          <CreateIdeaModal
+            painPointId={painPoint.id}
+            painPointTitle={painPoint.title}
+            isOpen={showCreateIdeaModal}
+            onClose={() => setShowCreateIdeaModal(false)}
+          />
+          <AiProcessingModal
+            isOpen={showAiProcessingModal}
+            onClose={() => setShowAiProcessingModal(false)}
+            painPointId={painPoint.id}
+            painPointTitle={painPoint.title}
+            currentProcessCount={painPoint.ai_process_count || 0}
+            onProcessComplete={fetchPainPoint}
+          />
+        </>
       )}
         </div>
       </div>
