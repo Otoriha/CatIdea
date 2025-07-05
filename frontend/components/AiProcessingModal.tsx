@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Sparkles, Lightbulb, RefreshCw } from 'lucide-react'
+import { Sparkles, Lightbulb, RefreshCw, X } from 'lucide-react'
 import { apiClient } from '@/lib/api-client'
 import { CatLoading } from '@/components/ui/cat-loading'
 import CreateIdeaModal from '@/components/CreateIdeaModal'
@@ -81,18 +80,28 @@ export default function AiProcessingModal({
     }
   }, [isOpen])
 
+  if (!isOpen || showCreateIdeaModal) return null
+
   return (
     <>
-      <Dialog open={isOpen && !showCreateIdeaModal} onOpenChange={onClose}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-card rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-border">
+          <div className="p-6 border-b border-border flex justify-between items-center">
+            <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary" />
-              AI自動処理
-            </DialogTitle>
-          </DialogHeader>
+              <h2 className="text-2xl font-bold text-card-foreground">
+                AI自動処理
+              </h2>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
-          <div className="space-y-4">
+          <div className="p-6 space-y-4">
             {/* 処理回数情報 */}
             <div className="bg-secondary/20 rounded-lg p-3 text-sm">
               <p className="text-muted-foreground">
@@ -187,8 +196,8 @@ export default function AiProcessingModal({
               </div>
             ) : null}
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      </div>
 
       {showCreateIdeaModal && (
         <CreateIdeaModal
