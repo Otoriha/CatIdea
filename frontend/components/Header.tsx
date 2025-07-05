@@ -19,7 +19,28 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
-              <h1 className="text-2xl font-bold text-foreground">
+              {/* ライトモード用ロゴ */}
+              <img 
+                src="/images/catidea-logo.png" 
+                alt="CatIdea"
+                className="h-10 w-auto block dark:hidden"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  document.getElementById('header-title')?.classList.remove('hidden');
+                }}
+              />
+              {/* ダークモード用ロゴ */}
+              <img 
+                src="/images/catidea-logo-dark.png" 
+                alt="CatIdea"
+                className="h-10 w-auto hidden dark:block"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  document.getElementById('header-title')?.classList.remove('hidden');
+                }}
+              />
+              {/* フォールバック用テキスト */}
+              <h1 id="header-title" className="text-2xl font-bold text-foreground hidden">
                 CatIdea
               </h1>
             </Link>
