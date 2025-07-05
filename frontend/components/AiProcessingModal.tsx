@@ -32,14 +32,26 @@ export default function AiProcessingModal({
   onClose,
   painPointId,
   painPointTitle,
-  currentProcessCount,
+  currentProcessCount: propProcessCount,
   onProcessComplete
 }: AiProcessingModalProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [processedContent, setProcessedContent] = useState<ProcessedContent | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [showCreateIdeaModal, setShowCreateIdeaModal] = useState(false)
+  const [localProcessCount, setLocalProcessCount] = useState(0)
   
+  // localStorageから処理回数を読み込む
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storageKey = `ai_process_count_${painPointId}`
+      const savedCount = localStorage.getItem(storageKey)
+      const count = savedCount ? parseInt(savedCount, 10) : 0
+      setLocalProcessCount(count)
+    }
+  }, [painPointId])
+  
+  const currentProcessCount = Math.max(propProcessCount, localProcessCount)
   const remainingProcesses = 3 - currentProcessCount
   const canProcess = remainingProcesses > 0
 
@@ -50,8 +62,50 @@ export default function AiProcessingModal({
     setError(null)
     
     try {
-      const response = await apiClient.post(`/pain_points/${painPointId}/ai_process`, {})
-      setProcessedContent(response.data.processed_content)
+      // AI会話を作成
+      const conversationResponse = await apiClient.post(`/pain_points/${painPointId}/ai_conversations`, {})
+      const conversationId = conversationResponse.data.id
+      
+      // AI処理用のプロンプトを送信
+      const prompt = `このペインポイントを分析して、以下の4つの観点で構造化してください：
+
+1. 問題の定義：このペインポイントが示す本質的な問題は何か
+2. 対象ユーザー：この問題に直面している具体的なユーザー層
+3. 解決アプローチ：考えられる解決策やアプローチ
+4. 期待される効果：解決によってもたらされる価値や効果
+
+簡潔に、各項目2-3文でまとめてください。`
+
+      const messageResponse = await apiClient.post(`/ai_conversations/${conversationId}/messages`, {
+        content: prompt
+      })
+      
+      // レスポンスを処理
+      const aiResponse = messageResponse.data.message
+      const analysisText = aiResponse.content
+      
+      // テキストを解析して構造化
+      const sections = analysisText.split(/\d\.\s+/).filter(s => s.trim())
+      const analysis = {
+        problem_definition: sections[0]?.split('：')[1]?.trim() || sections[0]?.trim() || '',
+        target_users: sections[1]?.split('：')[1]?.trim() || sections[1]?.trim() || '',
+        solution_approach: sections[2]?.split('：')[1]?.trim() || sections[2]?.trim() || '',
+        expected_impact: sections[3]?.split('：')[1]?.trim() || sections[3]?.trim() || ''
+      }
+      
+      setProcessedContent({
+        id: conversationId,
+        content: analysisText,
+        analysis,
+        created_at: new Date().toISOString()
+      })
+      
+      // 処理回数を更新
+      const newCount = currentProcessCount + 1
+      const storageKey = `ai_process_count_${painPointId}`
+      localStorage.setItem(storageKey, newCount.toString())
+      setLocalProcessCount(newCount)
+      
       onProcessComplete?.()
     } catch (error: any) {
       console.error('AI processing error:', error)

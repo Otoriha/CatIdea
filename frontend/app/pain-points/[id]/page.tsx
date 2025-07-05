@@ -8,8 +8,7 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft, Edit, Trash2, MessageSquare, X, Lightbulb, Sparkles } from 'lucide-react'
-import ChatContainer from '@/components/chat/ChatContainer'
+import { ArrowLeft, Edit, Trash2, Sparkles, Lightbulb } from 'lucide-react'
 import CreateIdeaModal from '@/components/CreateIdeaModal'
 import AiProcessingModal from '@/components/AiProcessingModal'
 import { CatLoading } from '@/components/ui/cat-loading'
@@ -47,8 +46,6 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
   const router = useRouter()
   const [painPoint, setPainPoint] = useState<PainPoint | null>(null)
   const [loading, setLoading] = useState(true)
-  const [showChat, setShowChat] = useState(false)
-  const [conversationId, setConversationId] = useState<string | null>(null)
   const [showCreateIdeaModal, setShowCreateIdeaModal] = useState(false)
   const [showAiProcessingModal, setShowAiProcessingModal] = useState(false)
   const resolvedParams = use(params)
@@ -80,9 +77,6 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
     }
   }
 
-  const handleStartConversation = async () => {
-    setShowChat(true)
-  }
 
   const getImportanceLabel = (importance: number) => {
     const labels = ['非常に低い', '低い', '中', '高い', '非常に高い']
@@ -234,47 +228,24 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
         </CardContent>
       </Card>
 
-      {!showChat && (
-        <div className="mt-8 flex justify-center gap-4">
-          <Button 
-            size="lg" 
-            onClick={() => setShowAiProcessingModal(true)}
-            className="bg-primary hover:bg-primary/90"
-          >
-            <Sparkles className="w-5 h-5 mr-2" />
-            AI自動処理
-          </Button>
-          <Button 
-            size="lg" 
-            variant="outline"
-            onClick={handleStartConversation}
-          >
-            <MessageSquare className="w-5 h-5 mr-2" />
-            AIと会話を開始
-          </Button>
-        </div>
-      )}
-
-      {showChat && (
-        <div className="mt-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">AI アシスタント</h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowChat(false)}
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
-          <div className="h-[600px]">
-            <ChatContainer
-              painPointId={id}
-              conversationId={conversationId}
-            />
-          </div>
-        </div>
-      )}
+      <div className="mt-8 flex justify-center gap-4">
+        <Button 
+          size="lg" 
+          onClick={() => setShowAiProcessingModal(true)}
+          className="bg-primary hover:bg-primary/90"
+        >
+          <Sparkles className="w-5 h-5 mr-2" />
+          AI自動処理
+        </Button>
+        <Button 
+          size="lg" 
+          variant="outline"
+          onClick={() => setShowCreateIdeaModal(true)}
+        >
+          <Lightbulb className="w-5 h-5 mr-2" />
+          アイディアに昇華
+        </Button>
+      </div>
 
       {painPoint && (
         <>
