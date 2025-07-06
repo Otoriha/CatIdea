@@ -66,7 +66,6 @@ export default function PainPointsPage() {
       }
 
       if (debouncedSearchQuery) params.q = debouncedSearchQuery
-      if (selectedTags.length > 0) params.tag_ids = selectedTags.join(',')
       if (importanceFilter && importanceFilter !== 'all') params.importance = importanceFilter
       if (urgencyFilter && urgencyFilter !== 'all') params.urgency = urgencyFilter
 

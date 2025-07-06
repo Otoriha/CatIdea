@@ -12,10 +12,12 @@ export const apiClient = axios.create({
 
 // リクエストインターセプター
 apiClient.interceptors.request.use((config) => {
-  // JWTトークンがlocalStorageにある場合は追加
-  const token = localStorage.getItem('token')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+  // JWTトークンがlocalStorageにある場合は追加（ブラウザ環境でのみ）
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
   }
   return config
 })
@@ -25,9 +27,11 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // 未認証の場合はログインページへリダイレクト
-      localStorage.removeItem('token')
-      window.location.href = '/login'
+      // 未認証の場合はログインページへリダイレクト（ブラウザ環境でのみ）
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token')
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }
