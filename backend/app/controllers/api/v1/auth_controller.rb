@@ -115,7 +115,12 @@ class Api::V1::AuthController < ApplicationController
   end
 
   def github_failure
-    redirect_to "#{ENV['FRONTEND_URL'] || 'http://localhost:3001'}?auth=failure"
+    error_msg = params[:message] || 'unknown_error'
+    strategy = params[:strategy] || 'unknown'
+    
+    Rails.logger.error "GitHub OAuth failure: #{error_msg}, strategy: #{strategy}"
+    
+    redirect_to "#{ENV['FRONTEND_URL'] || 'http://localhost:3001'}/auth/callback?error=#{error_msg}&strategy=#{strategy}"
   end
 
   private

@@ -13,6 +13,14 @@ function AuthCallbackContent() {
     const token = searchParams.get('token')
     const userId = searchParams.get('user_id')
     const userName = searchParams.get('user_name')
+    const error = searchParams.get('error')
+
+    if (error) {
+      // 認証エラーの場合
+      console.error('GitHub OAuth Error:', error)
+      router.push(`/login?error=${error}`)
+      return
+    }
 
     if (token && userId && userName) {
       // トークンをlocalStorageに保存
