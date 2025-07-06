@@ -35,7 +35,10 @@ Rails.application.configure do
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
   # config.action_cable.url = "wss://example.com/cable"
-  # config.action_cable.allowed_request_origins = [ "http://example.com", /http:\/\/example.*/ ]
+  # Action Cable CORS設定 - フロントエンドからのWebSocket接続を許可
+  if ENV["FRONTEND_URL"].present?
+    config.action_cable.allowed_request_origins = [ENV["FRONTEND_URL"]]
+  end
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # Can be used together with config.force_ssl for Strict-Transport-Security and secure cookies.

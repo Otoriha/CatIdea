@@ -2,20 +2,16 @@ databases:
   - name: catidea-postgres
     databaseName: catidea_production
     user: catidea
+    plan: free
 
 services:
-  # Redis アドオン
-  - type: redis
-    name: catidea-redis
-    ipAllowList: []
-
   # Web/API サービス
   - type: web
     name: catidea-backend
     runtime: docker
+    plan: free
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
-    preDeployCommand: bundle exec rails db:migrate
     healthCheckPath: /api/v1/health
 
     envVars:
@@ -28,10 +24,7 @@ services:
           name: catidea-postgres
           property: connectionString
       - key: REDIS_URL
-        fromService:
-          type: redis
-          name: catidea-redis
-          property: connectionString
+        sync: false
       - key: OPENAI_API_KEY
         sync: false
       - key: FRONTEND_URL
