@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, FormEvent, KeyboardEvent } from 'react'
+import { apiClient } from '@/lib/api-client'
 
 interface QuickRegistrationProps {
   onSuccess?: () => void
@@ -21,18 +22,9 @@ export default function QuickRegistration({ onSuccess }: QuickRegistrationProps)
     setMessage(null)
     
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pain_points/quick`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ content: content.trim() }),
+      const response = await apiClient.post('/pain_points/quick', {
+        content: content.trim()
       })
-      
-      if (!response.ok) {
-        throw new Error('登録に失敗しました')
-      }
       
       setContent('')
       setMessage({ type: 'success', text: 'ペインポイントを登録しました' })

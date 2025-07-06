@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import DetailedPainPointForm from '@/components/DetailedPainPointForm'
+import { apiClient } from '@/lib/api-client'
 
 interface PainPointFormData {
   title: string
@@ -26,48 +27,32 @@ export default function NewPainPointPage() {
     setMessage(null)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pain_points`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await apiClient.post('/pain_points', {
+        pain_point: {
+          title: formData.title,
+          description: `## 状況\n${formData.situation}\n\n## 感じた不便さ\n${formData.inconvenience}${formData.impact_scope ? `\n\n## 影響範囲\n${formData.impact_scope}` : ''}`,
+          importance: formData.importance,
+          urgency: formData.urgency
         },
-        credentials: 'include',
-        body: JSON.stringify({
-          pain_point: {
-            title: formData.title,
-            description: `## 状況\n${formData.situation}\n\n## 感じた不便さ\n${formData.inconvenience}${formData.impact_scope ? `\n\n## 影響範囲\n${formData.impact_scope}` : ''}`,
-            importance: formData.importance,
-            urgency: formData.urgency
-          },
-          tags: formData.tags
-        }),
+        tags: formData.tags
       })
 
-      if (response.ok) {
-        await response.json()
-        setMessage({ type: 'success', text: 'ペインポイントを保存しました' })
-        
-        // 成功時は一覧ページへリダイレクト
-        setTimeout(() => {
-          router.push('/pain-points')
-        }, 1500)
-        
-        return { success: true }
-      } else {
-        const errorData = await response.json()
-        setMessage({ 
-          type: 'error', 
-          text: errorData.message || 'ペインポイントの保存に失敗しました' 
-        })
-        return { success: false, message: errorData.message }
-      }
-    } catch (error) {
+      setMessage({ type: 'success', text: 'ペインポイントを保存しました' })
+      
+      // 成功時は一覧ページへリダイレクト
+      setTimeout(() => {
+        router.push('/pain-points')
+      }, 1500)
+      
+      return { success: true }
+    } catch (error: any) {
       console.error('Error creating pain point:', error)
+      const errorMessage = error.response?.data?.message || 'ペインポイントの保存に失敗しました'
       setMessage({ 
         type: 'error', 
-        text: 'ネットワークエラーが発生しました' 
+        text: errorMessage
       })
-      return { success: false, message: 'ネットワークエラーが発生しました' }
+      return { success: false, message: errorMessage }
     } finally {
       setIsLoading(false)
     }

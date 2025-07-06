@@ -35,7 +35,6 @@ function AuthCallbackContent() {
         
         // トークンをlocalStorageに保存
         localStorage.setItem('token', token)
-        console.log('Token saved to localStorage:', token.substring(0, 20) + '...')
         
         // AuthContextにユーザー情報を設定（GitHub OAuth用）
         setUserData({

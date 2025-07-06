@@ -15,12 +15,6 @@ apiClient.interceptors.request.use((config) => {
   // JWTトークンがlocalStorageにある場合は追加（ブラウザ環境でのみ）
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('token')
-    console.log('API Request Debug:', { 
-      url: config.url, 
-      method: config.method, 
-      hasToken: !!token,
-      tokenPrefix: token ? token.substring(0, 20) + '...' : null
-    })
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
