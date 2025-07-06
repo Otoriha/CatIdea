@@ -78,24 +78,13 @@ export default function PainPointsPage() {
     } finally {
       setLoading(false)
     }
-  }, [pagination.current_page, pagination.per_page, sortBy, debouncedSearchQuery, selectedTags, importanceFilter, urgencyFilter])
+  }, [pagination.current_page, pagination.per_page, sortBy, debouncedSearchQuery, importanceFilter, urgencyFilter])
 
-  const fetchTags = useCallback(async () => {
-    try {
-      const response = await apiClient.get('/tags')
-      setAllTags(response.data.tags)
-    } catch (error) {
-      console.error('Failed to fetch tags:', error)
-    }
-  }, [])
 
   useEffect(() => {
     fetchPainPoints()
   }, [fetchPainPoints])
 
-  useEffect(() => {
-    fetchTags()
-  }, [fetchTags])
 
   const handlePageChange = (newPage: number) => {
     setPagination(prev => ({ ...prev, current_page: newPage }))
