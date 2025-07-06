@@ -18,20 +18,28 @@ class ApplicationController < ActionController::API
   end
   
   def current_user_from_jwt
+    Rails.logger.info "JWT Auth Debug: Authorization header present: #{request.headers['Authorization'].present?}"
     return nil unless request.headers['Authorization'].present?
     
     token = request.headers['Authorization'].split(' ').last
+    Rails.logger.info "JWT Auth Debug: Token extracted: #{token.present? ? token[0..20] + '...' : 'nil'}"
+    
     payload = JsonWebToken.decode(token)
+    Rails.logger.info "JWT Auth Debug: Payload decoded: #{payload.present?}"
     
     return nil unless payload
     
     # ブラックリストチェック
     if payload['jti'] && JwtBlacklist.active.exists?(jti: payload['jti'])
+      Rails.logger.info "JWT Auth Debug: Token blacklisted"
       return nil
     end
     
-    User.find(payload['user_id'])
-  rescue StandardError
+    user = User.find(payload['user_id'])
+    Rails.logger.info "JWT Auth Debug: User found: #{user.present?}"
+    user
+  rescue StandardError => e
+    Rails.logger.error "JWT Auth Error: #{e.message}"
     nil
   end
 
