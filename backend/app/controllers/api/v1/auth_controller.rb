@@ -83,10 +83,12 @@ class Api::V1::AuthController < ApplicationController
     
     # 既存ユーザーを検索またはGitHubアカウントで新規作成
     user = User.find_by(email: email) || User.find_by(github_uid: github_uid)
+    Rails.logger.info "GitHub OAuth: Found existing user: #{user.present?}"
     
     if user
       # 既存ユーザーにGitHub UIDを追加（まだない場合）
       user.update(github_uid: github_uid) unless user.github_uid
+      Rails.logger.info "GitHub OAuth: Updated existing user #{user.id}"
     else
       # 新規ユーザー作成
       user = User.new(
@@ -97,11 +99,13 @@ class Api::V1::AuthController < ApplicationController
       )
       
       unless user.save
+        Rails.logger.error "GitHub OAuth: Failed to create user: #{user.errors.full_messages}"
         return render json: {
           message: 'ユーザー作成に失敗しました',
           errors: user.errors.full_messages
         }, status: :unprocessable_entity
       end
+      Rails.logger.info "GitHub OAuth: Created new user #{user.id}"
     end
     
     # ログイン処理
@@ -109,6 +113,7 @@ class Api::V1::AuthController < ApplicationController
     
     # JWTトークン生成
     token = JsonWebToken.encode(user_id: user.id)
+    Rails.logger.info "GitHub OAuth: Generated JWT for user #{user.id}, token: #{token[0..20]}..."
     
     # フロントエンドにリダイレクト（トークンとユーザー情報を付与）
     redirect_to "#{ENV['FRONTEND_URL'] || 'http://localhost:3001'}/auth/callback?token=#{token}&user_id=#{user.id}&user_name=#{URI.encode_www_form_component(user.name)}", allow_other_host: true
