@@ -14,7 +14,7 @@ export default function Home() {
       <Header />
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4" style={{ fontFamily: 'Times New Roman, serif' }}>
             CatIdea
           </h1>
           <p className="text-lg text-muted-foreground">
@@ -30,7 +30,7 @@ export default function Home() {
           <>
             <section className="mb-16">
               <h2 className="text-2xl font-semibold text-foreground mb-6 text-center">
-                ペインポイントをクイック登録
+                課題を見つけたらすぐ入力
               </h2>
               <QuickRegistration />
               
@@ -78,9 +78,9 @@ export default function Home() {
               使い方
             </h3>
             <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-              <li>日常で感じた課題や不便なことを入力</li>
-              <li>エンターキーですぐに保存</li>
-              <li>後でじっくり分析し、アイデアへと昇華</li>
+              <li>小さな気づきを大きなチャンスに</li>
+              <li>思考の整理はAIにお任せ</li>
+              <li>あなたの課題が誰かの解決策になる</li>
             </ol>
           </div>
         </section>
