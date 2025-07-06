@@ -199,7 +199,7 @@ export default function EditIdeaPage() {
               <select
                 id="status"
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as 'concept' | 'in_progress' | 'completed' | 'on_hold' })}
                 className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-input text-foreground"
               >
                 <option value="draft">草案</option>

@@ -102,7 +102,7 @@ export default function EditPainPointPage({ params }: { params: Promise<{ id: st
     setMessage(null)
 
     try {
-      const response = await apiClient.patch(`/pain_points/${id}`, {
+      await apiClient.patch(`/pain_points/${id}`, {
         pain_point: {
           title: formData.title,
           description: `## 状況\n${formData.situation}\n\n## 感じた不便さ\n${formData.inconvenience}${formData.impact_scope ? `\n\n## 影響範囲\n${formData.impact_scope}` : ''}`,

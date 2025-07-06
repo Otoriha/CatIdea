@@ -50,18 +50,16 @@ export default function PainPointsPage() {
   })
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedTags, setSelectedTags] = useState<number[]>([])
   const [importanceFilter, setImportanceFilter] = useState<string>('')
   const [urgencyFilter, setUrgencyFilter] = useState<string>('')
   const [sortBy, setSortBy] = useState('created_at_desc')
-  const [allTags, setAllTags] = useState<Tag[]>([])
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500)
 
   const fetchPainPoints = useCallback(async () => {
     try {
       setLoading(true)
-      const params: any = {
+      const params: Record<string, string> = {
         page: pagination.current_page,
         per_page: pagination.per_page,
         sort: sortBy

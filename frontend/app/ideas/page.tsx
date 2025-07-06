@@ -153,7 +153,7 @@ export default function IdeasPage() {
                 <Link
                   key={idea.id}
                   href={`/ideas/${idea.id}`}
-                  className="block bg-card rounded-lg shadow hover:shadow-lg transition-shadow p-6 border border-border">
+                  className="block bg-card rounded-lg shadow hover:shadow-lg transition-shadow p-6 border border-border"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1">

@@ -44,7 +44,7 @@ export default function NewPainPointPage() {
       })
 
       if (response.ok) {
-        const data = await response.json()
+        await response.json()
         setMessage({ type: 'success', text: 'ペインポイントを保存しました' })
         
         // 成功時は一覧ページへリダイレクト

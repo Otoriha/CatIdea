@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Sparkles, Lightbulb, RefreshCw, X } from 'lucide-react'
 import { apiClient } from '@/lib/api-client'
 import { CatLoading } from '@/components/ui/cat-loading'
