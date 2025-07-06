@@ -19,6 +19,7 @@ export default function IdeasPage() {
 
   useEffect(() => {
     if (!authLoading && !isLoggedIn) {
+      console.warn('🚨 Not logged in, redirecting to login page')
       router.push('/login')
     }
   }, [authLoading, isLoggedIn, router])

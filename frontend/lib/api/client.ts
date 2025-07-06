@@ -33,7 +33,7 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      console.error('401 Unauthorized Error:', {
+      console.error('🚨 401 Unauthorized Error:', {
         url: error.config?.url,
         method: error.config?.method,
         headers: error.config?.headers,
@@ -42,12 +42,15 @@ apiClient.interceptors.response.use(
       
       // /ideas エンドポイントの場合は詳細なエラーログを出力
       if (error.config?.url?.includes('/ideas')) {
-        console.error('Ideas endpoint 401 error - Auth token:', localStorage.getItem('authToken'));
+        console.error('🚨 Ideas endpoint 401 error - Auth token:', localStorage.getItem('authToken'));
+        alert(`認証エラー: ${error.response?.data?.error || 'Unauthorized'}\n\nトークン: ${localStorage.getItem('authToken')?.substring(0, 20)}...`);
       }
       
-      // 認証エラーの場合の処理
-      localStorage.removeItem('authToken');
-      window.location.href = '/login';
+      // 認証エラーの場合の処理 - 5秒後にリダイレクト
+      setTimeout(() => {
+        localStorage.removeItem('authToken');
+        window.location.href = '/login';
+      }, 5000);
     }
     return Promise.reject(error);
   }
