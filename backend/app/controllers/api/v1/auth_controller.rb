@@ -111,7 +111,7 @@ class Api::V1::AuthController < ApplicationController
     token = JsonWebToken.encode(user_id: user.id)
     
     # フロントエンドにリダイレクト（トークンとユーザー情報を付与）
-    redirect_to "#{ENV['FRONTEND_URL'] || 'http://localhost:3001'}/auth/callback?token=#{token}&user_id=#{user.id}&user_name=#{URI.encode_www_form_component(user.name)}"
+    redirect_to "#{ENV['FRONTEND_URL'] || 'http://localhost:3001'}/auth/callback?token=#{token}&user_id=#{user.id}&user_name=#{URI.encode_www_form_component(user.name)}", allow_other_host: true
   end
 
   def github_failure
@@ -120,7 +120,7 @@ class Api::V1::AuthController < ApplicationController
     
     Rails.logger.error "GitHub OAuth failure: #{error_msg}, strategy: #{strategy}"
     
-    redirect_to "#{ENV['FRONTEND_URL'] || 'http://localhost:3001'}/auth/callback?error=#{error_msg}&strategy=#{strategy}"
+    redirect_to "#{ENV['FRONTEND_URL'] || 'http://localhost:3001'}/auth/callback?error=#{error_msg}&strategy=#{strategy}", allow_other_host: true
   end
 
   private
