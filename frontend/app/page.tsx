@@ -72,12 +72,12 @@ export default function Home() {
           </section>
         )}
         
-        <section className="max-w-4xl mx-auto">
-          <div className="bg-card rounded-lg shadow-md p-6 border border-border">
-            <h3 className="text-xl font-semibold text-card-foreground mb-4">
+        <section className="flex justify-center">
+          <div className="bg-card rounded-lg shadow-md p-6 border border-border max-w-md">
+            <h3 className="text-xl font-semibold text-card-foreground mb-4 text-center">
               使い方
             </h3>
-            <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+            <ol className="list-decimal list-inside space-y-2 text-muted-foreground text-left">
               <li>小さな気づきを大きなチャンスに</li>
               <li>思考の整理はAIにお任せ</li>
               <li>あなたの課題が誰かの解決策になる</li>
