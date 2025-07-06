@@ -33,6 +33,18 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
+      console.error('401 Unauthorized Error:', {
+        url: error.config?.url,
+        method: error.config?.method,
+        headers: error.config?.headers,
+        response: error.response?.data
+      });
+      
+      // /ideas エンドポイントの場合は詳細なエラーログを出力
+      if (error.config?.url?.includes('/ideas')) {
+        console.error('Ideas endpoint 401 error - Auth token:', localStorage.getItem('authToken'));
+      }
+      
       // 認証エラーの場合の処理
       localStorage.removeItem('authToken');
       window.location.href = '/login';

@@ -37,10 +37,14 @@ export default function IdeasPage() {
       if (statusFilter) params.status = statusFilter
       if (sortBy) params.sort = sortBy
       
+      console.log('Fetching ideas with token:', localStorage.getItem('authToken'))
       const response = await ideasApi.getIdeas(params)
+      console.log('Ideas response:', response)
       setIdeas(response.ideas)
-    } catch (err) {
-      setError('アイディアの取得に失敗しました')
+    } catch (err: any) {
+      console.error('Ideas fetch error:', err)
+      console.error('Error response:', err.response)
+      setError(`アイディアの取得に失敗しました: ${err.response?.status || 'Unknown error'}`)
       console.error(err)
     } finally {
       setIsLoading(false)
