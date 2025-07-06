@@ -2,11 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react'
 
-interface Tag {
-  id: number
-  name: string
-}
-
 interface TagInputProps {
   label: string
   value: string[]

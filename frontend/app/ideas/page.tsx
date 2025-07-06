@@ -33,7 +33,7 @@ export default function IdeasPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const params: any = {}
+      const params: Record<string, string> = {}
       if (statusFilter) params.status = statusFilter
       if (sortBy) params.sort = sortBy
       
@@ -116,7 +116,7 @@ export default function IdeasPage() {
 
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
+            onChange={(e) => setSortBy(e.target.value)}
             className="px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-card text-card-foreground"
           >
             <option value="">作成日順</option>

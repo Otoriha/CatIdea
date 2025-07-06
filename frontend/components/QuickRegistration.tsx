@@ -39,7 +39,7 @@ export default function QuickRegistration({ onSuccess }: QuickRegistrationProps)
       onSuccess?.()
       
       setTimeout(() => setMessage(null), 3000)
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: '登録に失敗しました' })
       setTimeout(() => setMessage(null), 3000)
     } finally {

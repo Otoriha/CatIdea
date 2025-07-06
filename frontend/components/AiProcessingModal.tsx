@@ -118,7 +118,7 @@ ${painPointDescription ? `説明: ${painPointDescription}` : ''}
         })
         
         console.log('Message send response:', messageResponse.data)
-      } catch (messageError: any) {
+      } catch (messageError: unknown) {
         console.error('Failed to send message:', messageError)
         console.error('Error response:', messageError.response?.data)
         console.error('Error status:', messageError.response?.status)
@@ -156,7 +156,7 @@ ${painPointDescription ? `説明: ${painPointDescription}` : ''}
           status: conversationDetailResponse.status,
           data: conversationData,
           messagesLength: messages.length,
-          messagesPreview: messages.map((m: any) => ({
+          messagesPreview: messages.map((m: { id: string; sender_type: string; content?: string }) => ({
             id: m.id,
             sender_type: m.sender_type,
             contentLength: m.content?.length || 0,
@@ -165,7 +165,7 @@ ${painPointDescription ? `説明: ${painPointDescription}` : ''}
         })
         
         // 最新のAIメッセージを探す（sender_typeで判定）
-        const aiMessages = messages.filter((msg: any) => msg.sender_type === 'ai')
+        const aiMessages = messages.filter((msg: { id: string; sender_type: string; content?: string }) => msg.sender_type === 'ai')
         console.log('AI messages found:', aiMessages.length)
         
         if (aiMessages.length > 0) {
@@ -284,7 +284,7 @@ ${painPointDescription ? `説明: ${painPointDescription}` : ''}
       forceUpdate(prev => prev + 1)
       
       onProcessComplete?.()
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('AI processing error:', error)
       console.error('Error response:', error.response?.data)
       

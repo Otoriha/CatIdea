@@ -24,7 +24,7 @@ export default function MessageInput({ onSendMessage, disabled = false, placehol
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey && !isComposing) {
       e.preventDefault();
-      handleSubmit(e as any);
+      handleSubmit(e as FormEvent);
     }
   };
 

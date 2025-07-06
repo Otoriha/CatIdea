@@ -4,16 +4,16 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface UseWebSocketOptions {
   channelName: string;
-  channelParams?: Record<string, any>;
+  channelParams?: Record<string, unknown>;
   onConnected?: () => void;
   onDisconnected?: () => void;
-  onReceived?: (data: any) => void;
+  onReceived?: (data: unknown) => void;
   onError?: (error: Error) => void;
 }
 
 interface UseWebSocketReturn {
   isConnected: boolean;
-  sendMessage: (action: string, data: any) => void;
+  sendMessage: (action: string, data: unknown) => void;
   disconnect: () => void;
   reconnect: () => void;
 }
@@ -94,7 +94,7 @@ export function useWebSocket({
             callbacksRef.current.onDisconnected?.();
           },
 
-          received(data: any) {
+          received(data: unknown) {
             console.log('Data received from channel:', data);
             callbacksRef.current.onReceived?.(data);
           },
@@ -109,7 +109,7 @@ export function useWebSocket({
     }
   }, [token, channelName]); // 依存配列を最小限に
 
-  const sendMessage = useCallback((action: string, data: any) => {
+  const sendMessage = useCallback((action: string, data: unknown) => {
     if (!subscriptionRef.current) {
       callbacksRef.current.onError?.(new Error('WebSocket接続がありません'));
       return;

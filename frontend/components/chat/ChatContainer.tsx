@@ -12,7 +12,7 @@ import { painPointsApi, type PainPoint } from '@/lib/api/pain-points';
 import CreateIdeaModal from '@/components/CreateIdeaModal';
 import AiProcessingModal from '@/components/AiProcessingModal';
 import Link from 'next/link';
-import { Lightbulb, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 interface ChatContainerProps {
   painPointId: string;
@@ -87,7 +87,8 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
           setMessages(prev => [...prev, data.message!]);
           setIsTyping(false);
           setStreamingContent(prev => {
-            const { [data.message!.id]: _removed, ...rest } = prev;
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { [data.message!.id]: _, ...rest } = prev;
             return rest;
           });
         }
@@ -204,11 +205,6 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
     } finally {
       setIsSending(false);
     }
-  };
-
-  const handleCreateIdea = (painPoint: PainPoint) => {
-    setSelectedPainPoint(painPoint);
-    setShowCreateIdeaModal(true);
   };
 
   const handleAiProcess = (painPoint: PainPoint) => {
