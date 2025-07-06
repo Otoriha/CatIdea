@@ -13,7 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Search, Filter, Plus, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useDebounce } from '@/hooks/use-debounce'
-import { FAB } from '@/components/ui/fab'
 import { CatLoading } from '@/components/ui/cat-loading'
 
 interface Tag {
@@ -270,14 +269,6 @@ export default function PainPointsPage() {
         </div>
       )}
         </div>
-        
-        {/* FAB for creating new pain point */}
-        <FAB 
-          onClick={() => router.push('/pain-points/new')}
-          aria-label="新規ペインポイント作成"
-        >
-          <Plus className="h-6 w-6" />
-        </FAB>
       </div>
     </ProtectedRoute>
   )
