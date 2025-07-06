@@ -78,9 +78,9 @@ export default function Home() {
               使い方
             </h3>
             <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-              <li>日常で感じた課題や不便なことを入力</li>
-              <li>エンターキーですぐに保存</li>
-              <li>後でじっくり分析し、アイデアへと昇華</li>
+              <li>小さな気づきを大きなチャンスに</li>
+              <li>思考の整理はAIにお任せ</li>
+              <li>あなたの課題が誰かの解決策になる</li>
             </ol>
           </div>
         </section>
