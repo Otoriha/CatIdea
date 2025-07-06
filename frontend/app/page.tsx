@@ -28,7 +28,7 @@ export default function Home() {
           </div>
         ) : isLoggedIn ? (
           <>
-            <section className="mb-16">
+            <section className="mb-16 mt-12">
               <h2 className="text-2xl font-semibold text-foreground mb-6 text-center">
                 課題を見つけたらすぐ入力
               </h2>
