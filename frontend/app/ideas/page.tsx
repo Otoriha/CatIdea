@@ -38,7 +38,7 @@ export default function IdeasPage() {
       if (statusFilter) params.status = statusFilter
       if (sortBy) params.sort = sortBy
       
-      console.log('Fetching ideas with token:', localStorage.getItem('authToken'))
+      console.log('Fetching ideas with token:', localStorage.getItem('token'))
       const response = await ideasApi.getIdeas(params)
       console.log('Ideas response:', response)
       setIdeas(response.ideas)

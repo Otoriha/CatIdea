@@ -15,7 +15,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // 認証トークンがある場合は追加
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token'); // 'authToken' から 'token' に変更
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -42,15 +42,13 @@ apiClient.interceptors.response.use(
       
       // /ideas エンドポイントの場合は詳細なエラーログを出力
       if (error.config?.url?.includes('/ideas')) {
-        console.error('🚨 Ideas endpoint 401 error - Auth token:', localStorage.getItem('authToken'));
-        alert(`認証エラー: ${error.response?.data?.error || 'Unauthorized'}\n\nトークン: ${localStorage.getItem('authToken')?.substring(0, 20)}...`);
+        console.error('🚨 Ideas endpoint 401 error - Auth token:', localStorage.getItem('token'));
+        alert(`認証エラー: ${error.response?.data?.error || 'Unauthorized'}\n\nトークン: ${localStorage.getItem('token')?.substring(0, 20)}...`);
       }
       
-      // 認証エラーの場合の処理 - 5秒後にリダイレクト
-      setTimeout(() => {
-        localStorage.removeItem('authToken');
-        window.location.href = '/login';
-      }, 5000);
+      // 認証エラーの場合の処理
+      localStorage.removeItem('token');
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
