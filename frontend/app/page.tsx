@@ -30,7 +30,7 @@ export default function Home() {
           <>
             <section className="mb-16">
               <h2 className="text-2xl font-semibold text-foreground mb-6 text-center">
-                ペインポイントをクイック登録
+                課題を見つけたらすぐ入力
               </h2>
               <QuickRegistration />
               
