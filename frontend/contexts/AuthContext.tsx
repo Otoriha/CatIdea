@@ -19,6 +19,7 @@ interface AuthContextType {
   logout: () => Promise<void>
   checkAuth: () => Promise<void>
   loginWithGitHub: () => void
+  setUserData: (userData: User) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -159,6 +160,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     window.location.href = `${process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '')}/auth/github`
   }
 
+  const setUserData = (userData: User) => {
+    setUser(userData)
+    setIsLoggedIn(true)
+  }
+
   useEffect(() => {
     checkAuth()
   }, [])
@@ -189,6 +195,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     checkAuth,
     loginWithGitHub,
+    setUserData,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

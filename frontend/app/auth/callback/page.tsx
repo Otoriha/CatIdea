@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext'
 function AuthCallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { login } = useAuth()
+  const { setUserData } = useAuth()
 
   useEffect(() => {
     const token = searchParams.get('token')
@@ -26,11 +26,12 @@ function AuthCallbackContent() {
       // トークンをlocalStorageに保存
       localStorage.setItem('token', token)
       
-      // AuthContextにユーザー情報を設定
-      login({
+      // AuthContextにユーザー情報を設定（GitHub OAuth用）
+      setUserData({
         id: parseInt(userId),
         name: decodeURIComponent(userName),
-        email: '' // GitHub認証では後で取得
+        email: '', // GitHub認証では後で取得
+        created_at: new Date().toISOString()
       })
 
       // メインページにリダイレクト
@@ -39,7 +40,7 @@ function AuthCallbackContent() {
       // 認証失敗時はログインページにリダイレクト
       router.push('/login?error=authentication_failed')
     }
-  }, [searchParams, login, router])
+  }, [searchParams, setUserData, router])
 
   return (
     <div className="min-h-screen flex items-center justify-center">
