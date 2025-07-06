@@ -107,8 +107,11 @@ class Api::V1::AuthController < ApplicationController
     # ログイン処理
     session[:user_id] = user.id
     
-    # フロントエンドにリダイレクト
-    redirect_to "#{ENV['FRONTEND_URL'] || 'http://localhost:3001'}?auth=success&user_id=#{user.id}"
+    # JWTトークン生成
+    token = JsonWebToken.encode(user_id: user.id)
+    
+    # フロントエンドにリダイレクト（トークンとユーザー情報を付与）
+    redirect_to "#{ENV['FRONTEND_URL'] || 'http://localhost:3001'}/auth/callback?token=#{token}&user_id=#{user.id}&user_name=#{URI.encode_www_form_component(user.name)}"
   end
 
   def github_failure
