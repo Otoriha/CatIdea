@@ -7,7 +7,13 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "http://localhost:3001", "http://127.0.0.1:3001"
+    if Rails.env.development?
+      origins "http://localhost:3001", "http://127.0.0.1:3001"
+    else
+      # 本番環境では環境変数でフロントエンドのURLを指定
+      frontend_url = ENV["FRONTEND_URL"] || "https://your-app.vercel.app"
+      origins frontend_url
+    end
 
     resource "*",
       headers: :any,
