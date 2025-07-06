@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -8,8 +8,13 @@ function AuthCallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { setUserData } = useAuth()
+  const processedRef = useRef(false)
 
   useEffect(() => {
+    // 一度だけ実行されるようにする
+    if (processedRef.current) return
+    processedRef.current = true
+
     const token = searchParams.get('token')
     const userId = searchParams.get('user_id')
     const userName = searchParams.get('user_name')
@@ -39,11 +44,9 @@ function AuthCallbackContent() {
           created_at: new Date().toISOString()
         })
 
-        // 短い遅延を入れてから リダイレクト
-        setTimeout(() => {
-          console.log('Redirecting to home page...')
-          router.push('/')
-        }, 100)
+        // リダイレクト
+        console.log('Redirecting to home page...')
+        router.push('/')
       } catch (error) {
         console.error('Error during OAuth callback processing:', error)
         router.push('/login?error=callback_processing_failed')
@@ -53,7 +56,7 @@ function AuthCallbackContent() {
       console.log('Missing required parameters, redirecting to login')
       router.push('/login?error=authentication_failed')
     }
-  }, [searchParams, setUserData, router])
+  }, [])
 
   return (
     <div className="min-h-screen flex items-center justify-center">
