@@ -55,16 +55,16 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
     fetchPainPoint()
   }, [id])
 
-  const fetchPainPoint = async () => {
+  const fetchPainPoint = async (showLoading: boolean = true) => {
     try {
-      setLoading(true)
+      if (showLoading) setLoading(true)
       const response = await apiClient.get(`/pain_points/${id}`)
       setPainPoint(response.data.pain_point)
     } catch (error) {
       console.error('Failed to fetch pain point:', error)
       router.push('/pain-points')
     } finally {
-      setLoading(false)
+      if (showLoading) setLoading(false)
     }
   }
 
@@ -260,8 +260,9 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
             onClose={() => setShowAiProcessingModal(false)}
             painPointId={painPoint.id}
             painPointTitle={painPoint.title}
+            painPointDescription={painPoint.description}
             currentProcessCount={painPoint.ai_process_count || 0}
-            onProcessComplete={fetchPainPoint}
+            onProcessComplete={() => fetchPainPoint(false)}
           />
         </>
       )}

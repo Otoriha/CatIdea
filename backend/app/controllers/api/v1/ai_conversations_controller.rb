@@ -26,11 +26,21 @@ class Api::V1::AiConversationsController < ApplicationController
   def create
     @conversation = current_user.ai_conversations.find_or_initialize_by(pain_point: @pain_point)
 
+    # 既存の会話がerrorステータスの場合は削除して新規作成
+    if @conversation.persisted? && @conversation.status == 'error'
+      @conversation.destroy
+      @conversation = current_user.ai_conversations.build(pain_point: @pain_point)
+    end
+
     if @conversation.persisted?
+      # 既存の会話をactiveに戻す
+      @conversation.update!(status: :active) unless @conversation.active?
       render json: @conversation, include: :messages, status: :ok
     elsif @conversation.save
-      # Generate initial AI questions
-      generate_initial_questions(@conversation)
+      # Generate initial AI questions unless skip_initial_questions is set
+      unless params[:skip_initial_questions]
+        generate_initial_questions(@conversation)
+      end
       render json: @conversation, include: :messages, status: :created
     else
       render json: { errors: @conversation.errors.full_messages }, status: :unprocessable_entity

@@ -344,6 +344,7 @@ export default function ChatContainer({ painPointId }: ChatContainerProps) {
             }}
             painPointId={selectedPainPoint.id}
             painPointTitle={selectedPainPoint.title}
+            painPointDescription={selectedPainPoint.description}
             currentProcessCount={selectedPainPoint.ai_process_count || 0}
             onProcessComplete={() => {
               // 処理完了後に現在のペインポイントを再取得
