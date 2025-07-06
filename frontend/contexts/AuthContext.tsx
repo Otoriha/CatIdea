@@ -51,8 +51,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setToken(storedToken)
       }
       
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      }
+      
+      if (storedToken) {
+        headers['Authorization'] = `Bearer ${storedToken}`
+      }
+      
       const response = await fetch(`${apiUrl}/auth/me`, {
         credentials: 'include',
+        headers,
       })
       
       if (response.ok) {
