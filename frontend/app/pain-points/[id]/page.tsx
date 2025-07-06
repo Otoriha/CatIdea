@@ -134,13 +134,6 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
         </Button>
         <div className="flex gap-2">
           <Button
-            variant="secondary"
-            onClick={() => setShowCreateIdeaModal(true)}
-          >
-            <Lightbulb className="w-4 h-4 mr-2" />
-            アイディアに昇華
-          </Button>
-          <Button
             variant="outline"
             onClick={() => router.push(`/pain-points/${id}/edit`)}
           >
@@ -239,11 +232,11 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
         </Button>
         <Button 
           size="lg" 
-          variant="outline"
           onClick={() => setShowCreateIdeaModal(true)}
+          className="bg-yellow-500 hover:bg-yellow-600 text-white"
         >
           <Lightbulb className="w-5 h-5 mr-2" />
-          アイディアに昇華
+          アイディア化する
         </Button>
       </div>
 
