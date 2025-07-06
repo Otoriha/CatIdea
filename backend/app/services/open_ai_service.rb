@@ -75,11 +75,16 @@ class OpenAiService
     when 401
       error_msg = extract_error_message(response)
       Rails.logger.error "OpenAI API 401 Error: #{error_msg}"
+      Rails.logger.error "API Key present: #{@api_key.present?}"
+      Rails.logger.error "API Key length: #{@api_key&.length}"
+      Rails.logger.error "API Key starts with: #{@api_key&.first(10)}..." if @api_key.present?
       raise AuthenticationError, "Invalid API key: #{error_msg}"
     when 429
       raise RateLimitError, "Rate limit exceeded. Please try again later."
     when 400..499
       error_message = extract_error_message(response)
+      Rails.logger.error "OpenAI API Error #{response.code}: #{error_message}"
+      Rails.logger.error "Request failed with response: #{response.body}"
       raise ApiError, "Client error (#{response.code}): #{error_message}"
     when 500..599
       raise ApiError, "OpenAI server error (#{response.code}). Please try again later."

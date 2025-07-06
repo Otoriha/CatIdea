@@ -65,13 +65,18 @@ class GenerateAiResponseJob < ApplicationJob
         )
       end
 
+    rescue OpenAiService::AuthenticationError => e
+      Rails.logger.error "OpenAI Authentication Error in Job: #{e.message}"
+      handle_error(conversation, "OpenAI APIキーの認証に失敗しました。設定を確認してください。", :error)
     rescue OpenAiService::RateLimitError => e
       handle_error(conversation, "Rate limit exceeded. Please try again later.", :active)
     rescue OpenAiService::ApiError => e
+      Rails.logger.error "OpenAI API Error in Job: #{e.message}"
       handle_error(conversation, "AI service error: #{e.message}", :error)
     rescue StandardError => e
       Rails.logger.error "GenerateAiResponseJob error: #{e.message}"
-      handle_error(conversation, "An unexpected error occurred", :error)
+      Rails.logger.error "Error backtrace: #{e.backtrace.first(5).join("\n")}"
+      handle_error(conversation, "An unexpected error occurred: #{e.message}", :error)
     end
   end
 

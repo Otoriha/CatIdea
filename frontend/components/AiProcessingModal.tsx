@@ -131,55 +131,72 @@ ${painPointDescription ? `説明: ${painPointDescription}` : ''}
         throw new Error('メッセージの送信に失敗しました: ' + (messageError.response?.data?.error || messageError.message))
       }
       
-      // AIの応答をポーリングで確認（最大30秒）
+      // AIの応答をポーリングで確認（最大60秒）
       let analysisText = ''
       let aiMessage = null
-      const maxRetries = 6
+      const maxRetries = 12  // リトライ回数を増やす
       const retryInterval = 5000 // 5秒ごと
+      let userMessageFound = false
       
       for (let i = 0; i < maxRetries; i++) {
-        await new Promise(resolve => setTimeout(resolve, retryInterval))
-        
-        // 会話の詳細を取得してAIの応答を確認
-        const conversationDetailResponse = await apiClient.get(`/ai_conversations/${conversationId}`)
-        console.log(`Attempt ${i + 1}: Conversation detail response:`, conversationDetailResponse.data)
-        
-        // APIレスポンスの構造に従ってmessagesを取得
-        const conversationData = conversationDetailResponse.data
-        const messages = conversationData.messages || []
-        
-        console.log('Messages:', messages)
-        console.log('Messages length:', messages.length)
-        
-        // デバッグ用：毎回の試行で詳細を確認
-        console.log(`Attempt ${i + 1} - Full response:`, {
-          status: conversationDetailResponse.status,
-          data: conversationData,
-          messagesLength: messages.length,
-          messagesPreview: messages.map((m: { id: string; sender_type: string; content?: string }) => ({
-            id: m.id,
-            sender_type: m.sender_type,
-            contentLength: m.content?.length || 0,
-            contentPreview: m.content?.substring(0, 50) + '...'
-          }))
-        })
-        
-        // 最新のAIメッセージを探す（sender_typeで判定）
-        const aiMessages = messages.filter((msg: { id: string; sender_type: string; content?: string }) => msg.sender_type === 'ai')
-        console.log('AI messages found:', aiMessages.length)
-        
-        if (aiMessages.length > 0) {
-          aiMessage = aiMessages[aiMessages.length - 1] // 最後のAIメッセージを取得
-          analysisText = aiMessage?.content || ''
-          
-          if (analysisText) {
-            console.log('AI message found:', aiMessage)
-            console.log('Analysis text:', analysisText)
-            break // AIの応答が見つかったらループを抜ける
-          }
+        // 初回は少し待つ、その後は5秒ごと
+        if (i === 0) {
+          await new Promise(resolve => setTimeout(resolve, 3000))
+        } else {
+          await new Promise(resolve => setTimeout(resolve, retryInterval))
         }
         
-        console.log(`Attempt ${i + 1}: No AI response yet, retrying...`)
+        try {
+          // 会話の詳細を取得してAIの応答を確認
+          const conversationDetailResponse = await apiClient.get(`/ai_conversations/${conversationId}`)
+          console.log(`Attempt ${i + 1}/${maxRetries}: Checking for AI response`)
+          
+          // APIレスポンスの構造に従ってmessagesを取得
+          const conversationData = conversationDetailResponse.data
+          const messages = conversationData.messages || []
+          
+          console.log(`Messages count: ${messages.length}`)
+          
+          // まずユーザーメッセージが追加されているか確認
+          const userMessages = messages.filter((msg: { id: string; sender_type: string; content?: string }) => 
+            msg.sender_type === 'user' && msg.content?.includes('以下のペインポイントを分析')
+          )
+          
+          if (userMessages.length > 0 && !userMessageFound) {
+            userMessageFound = true
+            console.log('User message confirmed in conversation')
+          }
+          
+          // 最新のAIメッセージを探す（sender_typeで判定）
+          const aiMessages = messages.filter((msg: { id: string; sender_type: string; content?: string }) => msg.sender_type === 'ai')
+          console.log(`AI messages found: ${aiMessages.length}`)
+          
+          // ユーザーメッセージより後のAIメッセージを探す
+          if (userMessageFound && aiMessages.length > 0) {
+            aiMessage = aiMessages[aiMessages.length - 1] // 最後のAIメッセージを取得
+            analysisText = aiMessage?.content || ''
+            
+            if (analysisText && analysisText.includes('問題の定義')) {
+              console.log('AI analysis response found!')
+              console.log('Analysis text length:', analysisText.length)
+              break // AIの応答が見つかったらループを抜ける
+            }
+          }
+          
+          // 会話のステータスもチェック
+          if (conversationData.status === 'error') {
+            console.error('Conversation status is error')
+            throw new Error('AI会話でエラーが発生しました')
+          }
+          
+          console.log(`Attempt ${i + 1}: Waiting for AI response...`)
+        } catch (pollError: unknown) {
+          console.error(`Polling error on attempt ${i + 1}:`, pollError)
+          // ポーリング中のエラーは続行
+          if (i === maxRetries - 1) {
+            throw pollError
+          }
+        }
       }
       
       // AIメッセージが見つからない場合のフォールバック
@@ -286,15 +303,29 @@ ${painPointDescription ? `説明: ${painPointDescription}` : ''}
       onProcessComplete?.()
     } catch (error: unknown) {
       console.error('AI processing error:', error)
-      console.error('Error response:', error.response?.data)
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      })
+      
+      let errorMessage = 'AI処理中にエラーが発生しました'
       
       if (error.response?.status === 429) {
-        setError('このペインポイントのAI処理回数が上限（3回）に達しました')
+        errorMessage = 'このペインポイントのAI処理回数が上限（3回）に達しました'
+      } else if (error.response?.status === 402) {
+        errorMessage = 'APIの月間利用上限に達しました'
+      } else if (error.response?.status === 401) {
+        errorMessage = 'APIキーの認証に失敗しました。設定を確認してください'
       } else if (error.response?.status === 400) {
-        setError(error.response?.data?.error || 'リクエストが無効です')
-      } else {
-        setError('AI処理中にエラーが発生しました')
+        errorMessage = error.response?.data?.error || 'リクエストが無効です'
+      } else if (error.message?.includes('応答を取得できませんでした')) {
+        errorMessage = 'AIからの応答を取得できませんでした。APIキーが正しく設定されているか確認してください'
+      } else if (error.message) {
+        errorMessage = error.message
       }
+      
+      setError(errorMessage)
       setIsProcessing(false)  // エラー時のみここでisProcessingをfalseにする
     }
   }
