@@ -16,6 +16,4 @@ test:
 
 production:
   <<: *default
-  database: catidea_production
-  username: catidea
-  password: <%= ENV["CATIDEA_DATABASE_PASSWORD"] %>
+  url: <%= ENV["DATABASE_URL"] %>

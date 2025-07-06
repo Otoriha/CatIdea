@@ -2,7 +2,11 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
-# Create sample users
+# 本番環境ではサンプルデータを作成しない
+if Rails.env.development? || ENV['SEED_SAMPLE_DATA'] == 'true'
+  puts "Creating sample data for #{Rails.env} environment..."
+
+  # Create sample users
 user1 = User.find_or_create_by!(email: "tanaka@example.com") do |user|
   user.name = "田中太郎"
   user.password = "password123"
@@ -66,7 +70,10 @@ unless pain4.tags.include?(tag_life)
   pain4.tags << [tag_life, tag_ui].reject { |tag| pain4.tags.include?(tag) }
 end
 
-puts "Created #{User.count} users"
-puts "Created #{Tag.count} tags"
-puts "Created #{PainPoint.count} pain points"
-puts "Created #{PainPointTag.count} pain point tags"
+  puts "Created #{User.count} users"
+  puts "Created #{Tag.count} tags"
+  puts "Created #{PainPoint.count} pain points"
+  puts "Created #{PainPointTag.count} pain point tags"
+else
+  puts "Skipping sample data creation in #{Rails.env} environment"
+end
