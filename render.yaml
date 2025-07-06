@@ -4,15 +4,20 @@ databases:
     user: catidea
 
 services:
+  # Redis アドオン
   - type: redis
     name: catidea-redis
     ipAllowList: []
 
+  # Web/API サービス
   - type: web
     name: catidea-backend
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
+    preDeployCommand: bundle exec rails db:migrate
+    healthCheckPath: /api/v1/health
+
     envVars:
       - key: RAILS_ENV
         value: production
@@ -27,19 +32,11 @@ services:
           type: redis
           name: catidea-redis
           property: connectionString
-      - key: ACTION_CABLE_URL
-        fromService:
-          type: redis
-          name: catidea-redis
-          property: connectionString
       - key: OPENAI_API_KEY
+        sync: false
+      - key: FRONTEND_URL
         sync: false
       - key: RAILS_LOG_LEVEL
         value: info
       - key: RAILS_SERVE_STATIC_FILES
         value: true
-      - key: FRONTEND_URL
-        sync: false
-    buildCommand: bundle install && bundle exec rails assets:precompile
-    startCommand: bundle exec rails db:migrate && bundle exec rails server -b 0.0.0.0 -p $PORT
-    healthCheckPath: /api/v1/health
