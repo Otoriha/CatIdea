@@ -11,6 +11,7 @@ interface MessageInputProps {
 
 export default function MessageInput({ onSendMessage, disabled = false, placeholder = 'メッセージを入力...' }: MessageInputProps) {
   const [message, setMessage] = useState('');
+  const [isComposing, setIsComposing] = useState(false);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -21,7 +22,7 @@ export default function MessageInput({ onSendMessage, disabled = false, placehol
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !isComposing) {
       e.preventDefault();
       handleSubmit(e as any);
     }
@@ -33,9 +34,11 @@ export default function MessageInput({ onSendMessage, disabled = false, placehol
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={handleKeyDown}
+        onCompositionStart={() => setIsComposing(true)}
+        onCompositionEnd={() => setIsComposing(false)}
         placeholder={placeholder}
         disabled={disabled}
-        className="flex-1 resize-none rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+        className="flex-1 resize-none rounded-lg border border-border bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-muted disabled:text-muted-foreground text-foreground"
         rows={1}
         style={{
           minHeight: '40px',
@@ -45,7 +48,7 @@ export default function MessageInput({ onSendMessage, disabled = false, placehol
       <button
         type="submit"
         disabled={disabled || !message.trim()}
-        className="rounded-lg bg-blue-600 p-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+        className="rounded-lg bg-primary p-2 text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-muted disabled:cursor-not-allowed transition-colors"
       >
         <PaperAirplaneIcon className="h-5 w-5" />
       </button>

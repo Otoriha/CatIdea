@@ -8,9 +8,9 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft, Edit, Trash2, MessageSquare, X, Lightbulb } from 'lucide-react'
-import ChatContainer from '@/components/chat/ChatContainer'
+import { ArrowLeft, Edit, Trash2, Sparkles, Lightbulb } from 'lucide-react'
 import CreateIdeaModal from '@/components/CreateIdeaModal'
+import AiProcessingModal from '@/components/AiProcessingModal'
 import { CatLoading } from '@/components/ui/cat-loading'
 import {
   AlertDialog,
@@ -39,15 +39,15 @@ interface PainPoint {
   images: string[]
   created_at: string
   updated_at: string
+  ai_process_count?: number
 }
 
 export default function PainPointDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const [painPoint, setPainPoint] = useState<PainPoint | null>(null)
   const [loading, setLoading] = useState(true)
-  const [showChat, setShowChat] = useState(false)
-  const [conversationId, setConversationId] = useState<string | null>(null)
   const [showCreateIdeaModal, setShowCreateIdeaModal] = useState(false)
+  const [showAiProcessingModal, setShowAiProcessingModal] = useState(false)
   const resolvedParams = use(params)
   const id = resolvedParams.id
 
@@ -55,16 +55,16 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
     fetchPainPoint()
   }, [id])
 
-  const fetchPainPoint = async () => {
+  const fetchPainPoint = async (showLoading: boolean = true) => {
     try {
-      setLoading(true)
+      if (showLoading) setLoading(true)
       const response = await apiClient.get(`/pain_points/${id}`)
       setPainPoint(response.data.pain_point)
     } catch (error) {
       console.error('Failed to fetch pain point:', error)
       router.push('/pain-points')
     } finally {
-      setLoading(false)
+      if (showLoading) setLoading(false)
     }
   }
 
@@ -77,9 +77,6 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
     }
   }
 
-  const handleStartConversation = async () => {
-    setShowChat(true)
-  }
 
   const getImportanceLabel = (importance: number) => {
     const labels = ['非常に低い', '低い', '中', '高い', '非常に高い']
@@ -231,43 +228,43 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
         </CardContent>
       </Card>
 
-      {!showChat && (
-        <div className="mt-8 flex justify-center">
-          <Button size="lg" onClick={handleStartConversation}>
-            <MessageSquare className="w-5 h-5 mr-2" />
-            AIと会話を開始
-          </Button>
-        </div>
-      )}
-
-      {showChat && (
-        <div className="mt-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">AI アシスタント</h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowChat(false)}
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
-          <div className="h-[600px]">
-            <ChatContainer
-              painPointId={id}
-              conversationId={conversationId}
-            />
-          </div>
-        </div>
-      )}
+      <div className="mt-8 flex justify-center gap-4">
+        <Button 
+          size="lg" 
+          onClick={() => setShowAiProcessingModal(true)}
+          className="bg-primary hover:bg-primary/90"
+        >
+          <Sparkles className="w-5 h-5 mr-2" />
+          AI自動処理
+        </Button>
+        <Button 
+          size="lg" 
+          variant="outline"
+          onClick={() => setShowCreateIdeaModal(true)}
+        >
+          <Lightbulb className="w-5 h-5 mr-2" />
+          アイディアに昇華
+        </Button>
+      </div>
 
       {painPoint && (
-        <CreateIdeaModal
-          painPointId={painPoint.id}
-          painPointTitle={painPoint.title}
-          isOpen={showCreateIdeaModal}
-          onClose={() => setShowCreateIdeaModal(false)}
-        />
+        <>
+          <CreateIdeaModal
+            painPointId={painPoint.id}
+            painPointTitle={painPoint.title}
+            isOpen={showCreateIdeaModal}
+            onClose={() => setShowCreateIdeaModal(false)}
+          />
+          <AiProcessingModal
+            isOpen={showAiProcessingModal}
+            onClose={() => setShowAiProcessingModal(false)}
+            painPointId={painPoint.id}
+            painPointTitle={painPoint.title}
+            painPointDescription={painPoint.description}
+            currentProcessCount={painPoint.ai_process_count || 0}
+            onProcessComplete={() => fetchPainPoint(false)}
+          />
+        </>
       )}
         </div>
       </div>
