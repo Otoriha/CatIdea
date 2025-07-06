@@ -57,28 +57,11 @@ export default function QuickRegistration({ onSuccess }: QuickRegistrationProps)
           onCompositionStart={() => setIsComposing(true)}
           onCompositionEnd={() => setIsComposing(false)}
           placeholder="今感じている課題を入力してください..."
-          className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors text-base md:text-sm"
+          className="w-full px-4 py-3 rounded-lg border border-border bg-card text-card-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-base md:text-sm"
           disabled={isLoading}
           autoComplete="off"
           enterKeyHint="send"
         />
-        <button
-          type="submit"
-          disabled={isLoading || !content.trim()}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          aria-label="送信"
-        >
-          {isLoading ? (
-            <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          ) : (
-            <svg className="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-          )}
-        </button>
       </form>
       
       {message && (
