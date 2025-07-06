@@ -178,21 +178,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkAuth()
   }, [])
 
-  // GitHub OAuth認証結果の処理
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    const authResult = urlParams.get('auth')
-    
-    if (authResult === 'success') {
-      checkAuth()
-      // URLからクエリパラメータを削除
-      window.history.replaceState({}, document.title, window.location.pathname)
-    } else if (authResult === 'failure') {
-      console.error('GitHub authentication failed')
-      // URLからクエリパラメータを削除
-      window.history.replaceState({}, document.title, window.location.pathname)
-    }
-  }, [])
 
   const value: AuthContextType = {
     user,

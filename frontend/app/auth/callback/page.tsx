@@ -15,6 +15,8 @@ function AuthCallbackContent() {
     const userName = searchParams.get('user_name')
     const error = searchParams.get('error')
 
+    console.log('OAuth Callback Debug:', { token: !!token, userId, userName, error })
+
     if (error) {
       // 認証エラーの場合
       console.error('GitHub OAuth Error:', error)
@@ -23,21 +25,32 @@ function AuthCallbackContent() {
     }
 
     if (token && userId && userName) {
-      // トークンをlocalStorageに保存
-      localStorage.setItem('token', token)
-      
-      // AuthContextにユーザー情報を設定（GitHub OAuth用）
-      setUserData({
-        id: parseInt(userId),
-        name: decodeURIComponent(userName),
-        email: '', // GitHub認証では後で取得
-        created_at: new Date().toISOString()
-      })
+      try {
+        console.log('Setting user data and redirecting...')
+        
+        // トークンをlocalStorageに保存
+        localStorage.setItem('token', token)
+        
+        // AuthContextにユーザー情報を設定（GitHub OAuth用）
+        setUserData({
+          id: parseInt(userId),
+          name: decodeURIComponent(userName),
+          email: '', // GitHub認証では後で取得
+          created_at: new Date().toISOString()
+        })
 
-      // メインページにリダイレクト
-      router.push('/')
+        // 短い遅延を入れてから リダイレクト
+        setTimeout(() => {
+          console.log('Redirecting to home page...')
+          router.push('/')
+        }, 100)
+      } catch (error) {
+        console.error('Error during OAuth callback processing:', error)
+        router.push('/login?error=callback_processing_failed')
+      }
     } else {
       // 認証失敗時はログインページにリダイレクト
+      console.log('Missing required parameters, redirecting to login')
       router.push('/login?error=authentication_failed')
     }
   }, [searchParams, setUserData, router])
