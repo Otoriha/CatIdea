@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, FormEvent, KeyboardEvent } from 'react'
+import { useRouter } from 'next/navigation'
 import { apiClient } from '@/lib/api-client'
+import { useToast } from '@/contexts/ToastContext'
 
 interface QuickRegistrationProps {
   onSuccess?: () => void
@@ -12,6 +14,8 @@ export default function QuickRegistration({ onSuccess }: QuickRegistrationProps)
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const [isComposing, setIsComposing] = useState(false)
+  const router = useRouter()
+  const { showToast } = useToast()
 
   const handleSubmit = async (e?: FormEvent) => {
     e?.preventDefault()
@@ -29,6 +33,14 @@ export default function QuickRegistration({ onSuccess }: QuickRegistrationProps)
       setContent('')
       setMessage({ type: 'success', text: 'ペインポイントを登録しました' })
       onSuccess?.()
+      
+      // トースト通知を表示
+      showToast('ペインポイントを登録しました！ペインポイント一覧で確認できます。', 'success')
+      
+      // 3秒後にペインポイント一覧へ誘導
+      setTimeout(() => {
+        router.push('/pain-points')
+      }, 3000)
       
       setTimeout(() => setMessage(null), 3000)
     } catch {

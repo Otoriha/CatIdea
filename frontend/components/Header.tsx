@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { ThemeToggle } from './ThemeToggle'
 import { CatLoadingInline } from '@/components/ui/cat-loading'
@@ -9,6 +10,7 @@ import { CatLoadingInline } from '@/components/ui/cat-loading'
 export default function Header() {
   const { user, isLoggedIn, logout, isLoading } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
 
   const handleLogout = async () => {
     await logout()
@@ -52,7 +54,11 @@ export default function Header() {
           <nav className="hidden md:flex space-x-8">
             <Link 
               href="/" 
-              className="text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                pathname === '/' 
+                  ? 'text-primary bg-primary/10' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               ホーム
             </Link>
@@ -60,13 +66,21 @@ export default function Header() {
               <>
                 <Link 
                   href="/pain-points" 
-                  className="text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    pathname?.startsWith('/pain-points') 
+                      ? 'text-primary bg-primary/10' 
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
                 >
                   ペインポイント
                 </Link>
                 <Link 
                   href="/ideas" 
-                  className="text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    pathname?.startsWith('/ideas') 
+                      ? 'text-primary bg-primary/10' 
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
                 >
                   アイディア
                 </Link>
@@ -137,7 +151,11 @@ export default function Header() {
               <Link 
                 href="/" 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-base font-medium transition-colors"
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                  pathname === '/' 
+                    ? 'text-primary bg-primary/10' 
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
                 ホーム
               </Link>
@@ -146,14 +164,22 @@ export default function Header() {
                   <Link 
                     href="/pain-points" 
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-base font-medium transition-colors"
+                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                      pathname?.startsWith('/pain-points') 
+                        ? 'text-primary bg-primary/10' 
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
                   >
                     ペインポイント
                   </Link>
                   <Link 
                     href="/ideas" 
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-base font-medium transition-colors"
+                    className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                      pathname?.startsWith('/ideas') 
+                        ? 'text-primary bg-primary/10' 
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
                   >
                     アイディア
                   </Link>

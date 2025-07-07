@@ -80,7 +80,7 @@ export default function Home() {
             <div className="flex justify-center">
               <ol className="list-decimal list-inside space-y-3 text-muted-foreground text-left">
                 <li>日常で感じた課題や不便をメモ感覚で記録</li>
-                <li>自動で課題を深掘り</li>
+                <li>ペインポイントを自動で深掘り</li>
                 <li>アイディアとして記録・管理</li>
               </ol>
             </div>
