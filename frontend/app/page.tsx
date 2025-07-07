@@ -18,7 +18,7 @@ export default function Home() {
             CatIdea
           </h1>
           <p className="text-lg text-muted-foreground">
-            日常の課題をアイデアの種に変える
+            日常の課題（ペインポイント）をアイデアの種に変える
           </p>
         </header>
         
@@ -30,7 +30,7 @@ export default function Home() {
           <>
             <section className="mb-16 mt-12">
               <h2 className="text-2xl font-semibold text-foreground mb-6 text-center">
-                課題を見つけたらすぐ入力
+                ペインポイントを見つけたらすぐ入力
               </h2>
               <QuickRegistration />
               
