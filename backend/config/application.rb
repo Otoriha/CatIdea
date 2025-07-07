@@ -31,6 +31,9 @@ module App
 
     # Add middleware for session and cookies support
     config.middleware.use ActionDispatch::Cookies
-    config.middleware.use ActionDispatch::Session::CookieStore, key: '_catidea_session'
+    config.middleware.use ActionDispatch::Session::CookieStore, 
+      key: '_catidea_session',
+      same_site: :none,
+      secure: Rails.env.production?
   end
 end
