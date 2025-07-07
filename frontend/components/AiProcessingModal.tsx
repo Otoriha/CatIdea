@@ -369,17 +369,6 @@ ${painPointDescription ? `説明: ${painPointDescription}` : ''}
   //   }
   // }, [isOpen])
   
-  // デバッグ用：processedContentの変化を監視
-  useEffect(() => {
-    console.log('=== State Update ===')
-    console.log('processedContent:', processedContent)
-    console.log('isProcessing:', isProcessing)
-    console.log('error:', error)
-    console.log('showCreateIdeaModal:', showCreateIdeaModal)
-    if (processedContent) {
-      console.log('processedContent.analysis:', processedContent.analysis)
-    }
-  }, [processedContent, isProcessing, error, showCreateIdeaModal])
 
   if (!isOpen) return null
 
@@ -417,41 +406,15 @@ ${painPointDescription ? `説明: ${painPointDescription}` : ''}
             {/* ペインポイントのタイトル表示 */}
             <div className="bg-secondary/10 rounded-lg p-4 mb-4">
               <h3 className="font-medium text-foreground">{painPointTitle}</h3>
-              {/* デバッグ情報 */}
-              <div className="mt-2 text-xs text-muted-foreground">
-                <p>Debug: processedContent = {processedContent ? 'exists' : 'null'}</p>
-                <p>Debug: isProcessing = {isProcessing.toString()}</p>
-                <p>Debug: error = {error || 'null'}</p>
-                {processedContent && (
-                  <p>Debug: analysis keys = {Object.keys(processedContent.analysis || {}).join(', ')}</p>
-                )}
-              </div>
             </div>
 
-            {/* デバッグ情報 */}
-            {(() => {
-              console.log('=== Render Check ===')
-              console.log('processedContent exists:', !!processedContent)
-              console.log('isProcessing:', isProcessing)
-              console.log('error:', error)
-              if (processedContent) {
-                console.log('processedContent in render:', processedContent)
-              }
-              return null
-            })()}
+}
             
 
             {processedContent ? (
               <div className="space-y-4">
                 <div className="bg-card rounded-lg p-4 border border-border">
                   <h3 className="font-semibold text-card-foreground mb-3">AI分析結果</h3>
-                  
-                  {/* デバッグ: processedContentの内容を確認 */}
-                  <div className="mb-4 p-2 bg-secondary rounded text-xs">
-                    <p>Content: {processedContent.content ? `${processedContent.content.substring(0, 100)}...` : 'なし'}</p>
-                    <p>Analysis keys: {processedContent.analysis ? Object.keys(processedContent.analysis).join(', ') : 'なし'}</p>
-                    <p>problem_definition: {processedContent.analysis?.problem_definition || 'なし'}</p>
-                  </div>
                   
                   <div className="space-y-3 mt-4">
                     {/* Fallback: if all analysis fields are empty, show raw content */}

@@ -171,11 +171,11 @@ ${aiProcessedContent.analysis.expected_impact}`
             </div>
           </div>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-blue-900 dark:text-blue-200 mb-2">
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+            <h3 className="text-sm font-medium text-yellow-900 dark:text-yellow-200 mb-2">
               💡 ヒント
             </h3>
-            <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
+            <ul className="text-sm text-yellow-800 dark:text-yellow-300 space-y-1">
               <li>• 実現可能性: 技術的・リソース的に実現できるか</li>
               <li>• インパクト: 問題をどの程度解決できるか</li>
               <li>• 高い実現可能性と高いインパクトのアイディアを目指しましょう</li>
@@ -193,7 +193,7 @@ ${aiProcessedContent.analysis.expected_impact}`
             <button
               type="submit"
               disabled={isCreating}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isCreating ? '作成中...' : 'アイディアを作成'}
             </button>
