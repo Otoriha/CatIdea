@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import ReactMarkdown from 'react-markdown'
 import { ideasApi, type Idea } from '@/lib/api/ideas'
 import Header from '@/components/Header'
 import { useAuth } from '@/contexts/AuthContext'
@@ -166,9 +167,28 @@ export default function IdeaDetailPage() {
             <h2 className="text-xl font-semibold text-card-foreground mb-3">
               説明
             </h2>
-            <p className="text-muted-foreground whitespace-pre-wrap">
-              {idea.description}
-            </p>
+            <div className="text-muted-foreground">
+              <ReactMarkdown 
+                className="markdown-content"
+                components={{
+                  h1: ({children}) => <h1 className="text-2xl font-bold mb-4 text-card-foreground">{children}</h1>,
+                  h2: ({children}) => <h2 className="text-xl font-semibold mb-3 text-card-foreground">{children}</h2>,
+                  h3: ({children}) => <h3 className="text-lg font-medium mb-2 text-card-foreground">{children}</h3>,
+                  h4: ({children}) => <h4 className="text-base font-medium mb-2 text-card-foreground">{children}</h4>,
+                  p: ({children}) => <p className="mb-3 leading-relaxed">{children}</p>,
+                  ul: ({children}) => <ul className="list-disc pl-6 mb-3 space-y-1">{children}</ul>,
+                  ol: ({children}) => <ol className="list-decimal pl-6 mb-3 space-y-1">{children}</ol>,
+                  li: ({children}) => <li className="leading-relaxed">{children}</li>,
+                  strong: ({children}) => <strong className="font-semibold text-card-foreground">{children}</strong>,
+                  em: ({children}) => <em className="italic">{children}</em>,
+                  blockquote: ({children}) => <blockquote className="border-l-4 border-primary pl-4 py-2 mb-3 bg-secondary/20 rounded-r">{children}</blockquote>,
+                  code: ({children}) => <code className="bg-secondary px-2 py-1 rounded text-sm font-mono">{children}</code>,
+                  pre: ({children}) => <pre className="bg-secondary p-4 rounded mb-3 overflow-x-auto">{children}</pre>,
+                }}
+              >
+                {idea.description}
+              </ReactMarkdown>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 mb-8">
