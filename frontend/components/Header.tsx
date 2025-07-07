@@ -82,7 +82,7 @@ export default function Header() {
             ) : isLoggedIn ? (
               <div className="flex items-center space-x-4">
                 <span className="text-muted-foreground text-sm">
-                  こんにちは、{user?.name}さん
+                  こんにちは {user?.name}さん
                 </span>
                 <button
                   onClick={handleLogout}
