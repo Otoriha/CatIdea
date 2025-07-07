@@ -222,7 +222,7 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
       </Card>
 
       <div className="mt-8 flex justify-center gap-4">
-        <div className="flex flex-col items-center space-y-2">
+        <div className="flex flex-col items-center space-y-4">
           <Button 
             size="lg" 
             onClick={() => setShowAiProcessingModal(true)}
@@ -239,7 +239,7 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
           </div>
         </div>
         
-        <div className="flex flex-col items-center space-y-2">
+        <div className="flex flex-col items-center space-y-4">
           <Button 
             size="lg" 
             onClick={() => setShowCreateIdeaModal(true)}
