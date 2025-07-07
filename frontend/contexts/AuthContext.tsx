@@ -14,8 +14,8 @@ interface AuthContextType {
   token: string | null
   isLoading: boolean
   isLoggedIn: boolean
-  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>
-  signup: (userData: { name: string; email: string; password: string; password_confirmation: string }) => Promise<{ success: boolean; message?: string }>
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string; errors?: string[] }>
+  signup: (userData: { name: string; email: string; password: string; password_confirmation: string }) => Promise<{ success: boolean; message?: string; errors?: string[] }>
   logout: () => Promise<void>
   checkAuth: () => Promise<void>
   loginWithGitHub: () => void
@@ -141,7 +141,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
         return { success: true }
       } else {
-        return { success: false, message: data.message }
+        return { success: false, message: data.message, errors: data.errors }
       }
     } catch (error) {
       console.error('Signup failed:', error)

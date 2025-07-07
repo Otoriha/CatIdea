@@ -74,7 +74,11 @@ export default function SignupPage() {
     if (result.success) {
       router.push('/')
     } else {
-      setErrors([result.message || 'サインアップに失敗しました'])
+      if (result.errors && Array.isArray(result.errors)) {
+        setErrors(result.errors)
+      } else {
+        setErrors([result.message || 'サインアップに失敗しました'])
+      }
     }
     
     setIsLoading(false)
