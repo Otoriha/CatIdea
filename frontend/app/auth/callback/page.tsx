@@ -44,9 +44,17 @@ function AuthCallbackContent() {
           created_at: new Date().toISOString()
         })
 
-        // リダイレクト
+        // リダイレクト前に少し待つ（状態の更新を確実にするため）
         console.log('Redirecting to home page...')
-        router.push('/')
+        setTimeout(() => {
+          // 確実にリダイレクトするため、両方の方法を試す
+          router.push('/')
+          router.refresh()
+          // それでもダメな場合のフォールバック
+          setTimeout(() => {
+            window.location.href = '/'
+          }, 500)
+        }, 100)
       } catch (error) {
         console.error('Error during OAuth callback processing:', error)
         router.push('/login?error=callback_processing_failed')

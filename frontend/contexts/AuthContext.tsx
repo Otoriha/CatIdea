@@ -172,6 +172,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const setUserData = (userData: User) => {
     setUser(userData)
     setIsLoggedIn(true)
+    // トークンがlocalStorageにある場合は、それも設定
+    const storedToken = localStorage.getItem('token')
+    if (storedToken) {
+      setToken(storedToken)
+    }
   }
 
   useEffect(() => {
