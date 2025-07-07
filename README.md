@@ -65,4 +65,3 @@
 - **Backend:** Ruby on Rails (APIモード)
 - **Database:** PostgreSQL
 - **AI Integration:** OpenAI API (GPT-4.1-nano) を、Railsのサービスクラス経由で安全に呼び出す。
-- **リアルタイム対話:** Action Cable (WebSocket) を利用し、AIからの応答をリアルタイムで受信。

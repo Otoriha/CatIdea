@@ -222,7 +222,7 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
       </Card>
 
       <div className="mt-8 flex justify-center gap-4">
-        <div className="flex flex-col items-center space-y-2">
+        <div className="flex flex-col items-center space-y-6">
           <Button 
             size="lg" 
             onClick={() => setShowAiProcessingModal(true)}
@@ -232,14 +232,14 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
             AI自動処理
           </Button>
           <div className="relative max-w-xs">
-            <div className="bg-muted rounded-lg p-3 text-sm text-muted-foreground relative">
+            <div className="bg-muted rounded-lg p-4 text-sm text-muted-foreground relative">
               <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px] border-b-muted"></div>
               AIが課題を分析し、構造化された洞察を提供します
             </div>
           </div>
         </div>
         
-        <div className="flex flex-col items-center space-y-2">
+        <div className="flex flex-col items-center space-y-6">
           <Button 
             size="lg" 
             onClick={() => setShowCreateIdeaModal(true)}
@@ -249,7 +249,7 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
             アイディア化する
           </Button>
           <div className="relative max-w-xs">
-            <div className="bg-muted rounded-lg p-3 text-sm text-muted-foreground relative">
+            <div className="bg-muted rounded-lg p-4 text-sm text-muted-foreground relative">
               <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px] border-b-muted"></div>
               自分で考えてアイディアを作成します
             </div>
