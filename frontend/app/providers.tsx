@@ -1,6 +1,7 @@
 'use client'
 
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import { ToastProvider } from '@/contexts/ToastContext'
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
@@ -11,7 +12,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
       suppressHydrationWarning
     >
-      {children}
+      <ToastProvider>
+        {children}
+      </ToastProvider>
     </NextThemesProvider>
   )
 }
