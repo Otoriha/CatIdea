@@ -221,8 +221,8 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
         </CardContent>
       </Card>
 
-      <div className="mt-8 space-y-4">
-        <div className="flex justify-center gap-4">
+      <div className="mt-8 flex justify-center gap-4">
+        <div className="flex flex-col items-center space-y-2">
           <Button 
             size="lg" 
             onClick={() => setShowAiProcessingModal(true)}
@@ -231,6 +231,15 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
             <Sparkles className="w-5 h-5 mr-2" />
             AI自動処理
           </Button>
+          <div className="relative max-w-xs">
+            <div className="bg-muted rounded-lg p-3 text-sm text-muted-foreground relative">
+              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px] border-b-muted"></div>
+              AIが課題を分析し、構造化された洞察を提供します
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex flex-col items-center space-y-2">
           <Button 
             size="lg" 
             onClick={() => setShowCreateIdeaModal(true)}
@@ -239,16 +248,6 @@ export default function PainPointDetailPage({ params }: { params: Promise<{ id: 
             <Lightbulb className="w-5 h-5 mr-2" />
             アイディア化する
           </Button>
-        </div>
-        
-        {/* ボタンの説明 */}
-        <div className="flex justify-center gap-4">
-          <div className="relative max-w-xs">
-            <div className="bg-muted rounded-lg p-3 text-sm text-muted-foreground relative">
-              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px] border-b-muted"></div>
-              AIが課題を分析し、構造化された洞察を提供します
-            </div>
-          </div>
           <div className="relative max-w-xs">
             <div className="bg-muted rounded-lg p-3 text-sm text-muted-foreground relative">
               <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px] border-b-muted"></div>
