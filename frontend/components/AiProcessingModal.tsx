@@ -408,7 +408,6 @@ ${painPointDescription ? `説明: ${painPointDescription}` : ''}
               <h3 className="font-medium text-foreground">{painPointTitle}</h3>
             </div>
 
-}
             
 
             {processedContent ? (
