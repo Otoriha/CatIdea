@@ -72,12 +72,23 @@ export default function Home() {
           </section>
         )}
         
-        <section className="flex justify-center">
-          <div className="bg-card rounded-lg shadow-md p-6 border border-border max-w-md">
+        <section className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <div className="bg-card rounded-lg shadow-md p-6 border border-border">
             <h3 className="text-xl font-semibold text-card-foreground mb-4 text-center">
               使い方
             </h3>
-            <ol className="list-decimal list-inside space-y-2 text-muted-foreground text-left">
+            <ol className="list-decimal list-inside space-y-3 text-muted-foreground text-left">
+              <li>日常で感じた課題や不便をメモ感覚で記録</li>
+              <li>自動で課題を深掘り</li>
+              <li>アイディアとして記録・管理</li>
+            </ol>
+          </div>
+          
+          <div className="bg-card rounded-lg shadow-md p-6 border border-border">
+            <h3 className="text-xl font-semibold text-card-foreground mb-4 text-center">
+              CatIdeaの流れ
+            </h3>
+            <ol className="list-decimal list-inside space-y-3 text-muted-foreground text-left">
               <li>小さな気づきを大きなチャンスに</li>
               <li>思考の整理はAIにお任せ</li>
               <li>あなたの課題が誰かの解決策になる</li>
