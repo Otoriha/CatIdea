@@ -6,7 +6,6 @@ interface TagInputProps {
   label: string
   value: string[]
   onChange: (tags: string[]) => void
-  suggestions?: string[]
   required?: boolean
   disabled?: boolean
   placeholder?: string
@@ -18,7 +17,6 @@ export default function TagInput({
   label,
   value,
   onChange,
-  suggestions = [],
   required = false,
   disabled = false,
   placeholder = 'タグを入力してください...',
@@ -26,45 +24,9 @@ export default function TagInput({
   description
 }: TagInputProps) {
   const [inputValue, setInputValue] = useState('')
-  const [isOpen, setIsOpen] = useState(false)
-  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([])
-  const [highlightedIndex, setHighlightedIndex] = useState(-1)
+  const [isComposing, setIsComposing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // 入力値に基づいて候補をフィルタリング
-  useEffect(() => {
-    if (inputValue.trim()) {
-      const filtered = suggestions.filter(
-        suggestion => 
-          suggestion.toLowerCase().includes(inputValue.toLowerCase()) &&
-          !value.includes(suggestion)
-      )
-      setFilteredSuggestions(filtered)
-      setIsOpen(filtered.length > 0)
-    } else {
-      setFilteredSuggestions([])
-      setIsOpen(false)
-    }
-    setHighlightedIndex(-1)
-  }, [inputValue, suggestions, value])
-
-  // 外部クリックでドロップダウンを閉じる
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        inputRef.current &&
-        !inputRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
 
   const addTag = (tag: string) => {
     if (disabled) return
@@ -78,8 +40,6 @@ export default function TagInput({
       onChange([...value, trimmedTag])
       // タグ追加後は必ず入力値をクリア
       setInputValue('')
-      setIsOpen(false)
-      setHighlightedIndex(-1)
     }
   }
 
@@ -88,24 +48,11 @@ export default function TagInput({
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !isComposing) {
       e.preventDefault()
-      if (highlightedIndex >= 0 && filteredSuggestions[highlightedIndex]) {
-        addTag(filteredSuggestions[highlightedIndex])
-      } else if (inputValue.trim()) {
+      if (inputValue.trim()) {
         addTag(inputValue)
       }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setHighlightedIndex(prev => 
-        prev < filteredSuggestions.length - 1 ? prev + 1 : prev
-      )
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setHighlightedIndex(prev => prev > 0 ? prev - 1 : -1)
-    } else if (e.key === 'Escape') {
-      setIsOpen(false)
-      setHighlightedIndex(-1)
     } else if (e.key === 'Backspace' && !inputValue && value.length > 0) {
       removeTag(value.length - 1)
     }
@@ -160,7 +107,8 @@ export default function TagInput({
                 value={inputValue}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                onFocus={() => inputValue && setIsOpen(filteredSuggestions.length > 0)}
+                onCompositionStart={() => setIsComposing(true)}
+                onCompositionEnd={() => setIsComposing(false)}
                 placeholder={value.length === 0 ? placeholder : ''}
                 disabled={disabled}
                 className="flex-1 min-w-[120px] border-none outline-none bg-transparent text-foreground placeholder-muted-foreground disabled:opacity-50"
@@ -168,33 +116,6 @@ export default function TagInput({
             )}
           </div>
         </div>
-
-        {/* オートコンプリートドロップダウン */}
-        {isOpen && filteredSuggestions.length > 0 && (
-          <div
-            ref={dropdownRef}
-            className="absolute z-10 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-60 overflow-auto"
-          >
-            {filteredSuggestions.map((suggestion, index) => (
-              <button
-                key={suggestion}
-                type="button"
-                className={`w-full px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground transition-colors ${
-                  index === highlightedIndex 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-popover-foreground'
-                }`}
-                onClick={() => {
-                  addTag(suggestion)
-                  setInputValue('') // 明示的にクリア
-                }}
-                onMouseEnter={() => setHighlightedIndex(index)}
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* ヘルプテキスト */}
