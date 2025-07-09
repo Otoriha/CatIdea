@@ -203,22 +203,23 @@ export default function TagInput({
 
       {/* タグ付けガイドライン */}
       <div className="mt-3 p-3 bg-muted/30 rounded-md text-xs text-muted-foreground space-y-2">
-        <p className="font-medium text-foreground">💡 効果的なタグ付けのヒント</p>
+        <p className="font-medium text-foreground">💡 タグ付けのコツ（後で探しやすくなります）</p>
         <ul className="space-y-1 ml-4">
-          <li>• <span className="font-medium">推奨タグ数：</span>3〜5個程度が理想的です</li>
-          <li>• <span className="font-medium">カテゴリを意識：</span>
-            <span className="inline-flex gap-1 ml-1">
-              <span className="text-primary">#技術領域</span>
-              <span className="text-primary">#問題の性質</span>
-              <span className="text-primary">#影響範囲</span>
-            </span>
+          <li>• <span className="font-medium">場面をメモ：</span>いつ・どこで起きたか
+            <div className="ml-4 mt-0.5">
+              <span className="text-green-600 dark:text-green-400">例: 朝の通勤時、スマホ表示、月末処理</span>
+            </div>
           </li>
-          <li>• <span className="font-medium">具体的に：</span>
-            <span className="text-green-600 dark:text-green-400">良い例: #React認証</span>
-            <span className="text-muted-foreground mx-1">／</span>
-            <span className="text-red-600 dark:text-red-400">悪い例: #問題</span>
+          <li>• <span className="font-medium">あなたの言葉で：</span>「あれ何だっけ？」と思い出すときの言葉
+            <div className="ml-4 mt-0.5">
+              <span className="text-green-600 dark:text-green-400">例: 遅い、見つからない、使いづらい、エラー</span>
+            </div>
           </li>
-          <li>• <span className="font-medium">統一性：</span>単数形・名詞で統一（#バグ not #バグたち）</li>
+          <li>• <span className="font-medium">シンプルに：</span>短い言葉の方が後で見つけやすい
+            <div className="ml-4 mt-0.5">
+              <span className="text-green-600 dark:text-green-400">例: 「ログイン」だけでOK（「ログインできない問題」は長すぎ）</span>
+            </div>
+          </li>
         </ul>
       </div>
     </div>

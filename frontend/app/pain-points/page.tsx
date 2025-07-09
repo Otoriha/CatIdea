@@ -18,6 +18,7 @@ import { CatLoading } from '@/components/ui/cat-loading'
 interface Tag {
   id: number
   name: string
+  pain_points_count?: number
 }
 
 interface PainPoint {
@@ -52,8 +53,23 @@ export default function PainPointsPage() {
   const [importanceFilter, setImportanceFilter] = useState<string>('')
   const [urgencyFilter, setUrgencyFilter] = useState<string>('')
   const [sortBy, setSortBy] = useState('created_at_desc')
+  const [availableTags, setAvailableTags] = useState<Tag[]>([])
+  const [selectedTags, setSelectedTags] = useState<number[]>([])
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500)
+
+  // タグ一覧を取得
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await apiClient.get('/tags')
+        setAvailableTags(response.data.tags)
+      } catch (error) {
+        console.error('Failed to fetch tags:', error)
+      }
+    }
+    fetchTags()
+  }, [])
 
   const fetchPainPoints = useCallback(async () => {
     try {
@@ -67,6 +83,7 @@ export default function PainPointsPage() {
       if (debouncedSearchQuery) params.q = debouncedSearchQuery
       if (importanceFilter && importanceFilter !== 'all') params.importance = importanceFilter
       if (urgencyFilter && urgencyFilter !== 'all') params.urgency = urgencyFilter
+      if (selectedTags.length > 0) params.tag_ids = selectedTags.join(',')
 
       const response = await apiClient.get('/pain_points', { params })
       setPainPoints(response.data.pain_points)
@@ -76,7 +93,7 @@ export default function PainPointsPage() {
     } finally {
       setLoading(false)
     }
-  }, [pagination.current_page, pagination.per_page, sortBy, debouncedSearchQuery, importanceFilter, urgencyFilter])
+  }, [pagination.current_page, pagination.per_page, sortBy, debouncedSearchQuery, importanceFilter, urgencyFilter, selectedTags])
 
 
   useEffect(() => {
@@ -86,6 +103,15 @@ export default function PainPointsPage() {
 
   const handlePageChange = (newPage: number) => {
     setPagination(prev => ({ ...prev, current_page: newPage }))
+  }
+
+  const toggleTag = (tagId: number) => {
+    setSelectedTags(prev => 
+      prev.includes(tagId) 
+        ? prev.filter(id => id !== tagId)
+        : [...prev, tagId]
+    )
+    setPagination(prev => ({ ...prev, current_page: 1 })) // ページを1に戻す
   }
 
   const getImportanceColor = (importance: number) => {
@@ -138,7 +164,7 @@ export default function PainPointsPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 type="text"
-                placeholder="キーワードで検索..."
+                placeholder="キーワードまたはタグで検索..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -192,6 +218,31 @@ export default function PainPointsPage() {
             </Select>
           </div>
         </div>
+
+        {/* タグフィルタセクション */}
+        {availableTags.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Filter className="w-4 h-4" />
+              <span>タグでフィルタ：</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {availableTags.map((tag) => (
+                <Badge
+                  key={tag.id}
+                  variant={selectedTags.includes(tag.id) ? "default" : "outline"}
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => toggleTag(tag.id)}
+                >
+                  {tag.name}
+                  {tag.pain_points_count && (
+                    <span className="ml-1 text-xs opacity-70">({tag.pain_points_count})</span>
+                  )}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ペインポイント一覧 */}
