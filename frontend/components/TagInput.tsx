@@ -76,10 +76,11 @@ export default function TagInput({
       value.length < maxTags
     ) {
       onChange([...value, trimmedTag])
+      // タグ追加後は必ず入力値をクリア
+      setInputValue('')
+      setIsOpen(false)
+      setHighlightedIndex(-1)
     }
-    setInputValue('')
-    setIsOpen(false)
-    setHighlightedIndex(-1)
   }
 
   const removeTag = (indexToRemove: number) => {
@@ -94,8 +95,6 @@ export default function TagInput({
       } else if (inputValue.trim()) {
         addTag(inputValue)
       }
-      // Enterキー押下後は必ず入力値をクリア
-      setInputValue('')
     } else if (e.key === 'ArrowDown') {
       e.preventDefault()
       setHighlightedIndex(prev => 
@@ -185,7 +184,10 @@ export default function TagInput({
                     ? 'bg-primary/10 text-primary' 
                     : 'text-popover-foreground'
                 }`}
-                onClick={() => addTag(suggestion)}
+                onClick={() => {
+                  addTag(suggestion)
+                  setInputValue('') // 明示的にクリア
+                }}
                 onMouseEnter={() => setHighlightedIndex(index)}
               >
                 {suggestion}
