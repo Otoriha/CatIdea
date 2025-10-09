@@ -22,3 +22,5 @@ Dockerfile.dev.temp
 .claude/
 CLAUDE.md
 アプリアイデア.md
+.mcp.json
+.gemini
